@@ -6,7 +6,7 @@
 int printOutMsg(int errorCode, const char *programName, 
 const char *filename, const char *miscMessage) 
 {
-	char callerID[strlen(programName) - 4];
+	char callerID[strlen(programName) - 5];
 	
 	//Create a string that chops off the leading 
 	//"./pgm" so our main switch statement is more 
@@ -14,32 +14,32 @@ const char *filename, const char *miscMessage)
 	//We need the entire title, not only for 
 	//readablility, since the names of 
 	//the modules may share inital letters
-	for(int i = 4; i < strlen(programName); ++i)
-		callerID[i - 4] = programName[i];
+	for(int i = 5; i < strlen(programName); ++i)
+		callerID[i - 5] = programName[i];
 
 	switch(errorCode)
 	{
 		case -1:
-		if(callerID == "Compare")
+		if(strcmp(callerID, "Compare"))
 			printf("DIFFERENT");
 			errorCode = 0;
 		break;
 		case 0:		
-			if(callerID == "Read")
+			if(!strcmp(callerID, "Read"))
 				printf("READ");
-			else if(callerID == "Write")
+			else if(!strcmp(callerID, "Write"))
 				printf("WRITTEN");
-			else if(callerID == "Echo")
+			else if(!strcmp(callerID, "Echo"))
 				printf("ECHOED");	
-			else if(callerID == "Compare")
+			else if(!strcmp(callerID, "Echo"))
 				printf("IDENTICAL");
-			else if(callerID ==  "a2b" || callerID == "b2a") 
+			else if(!strcmp(callerID,"a2b") || !strcmp(callerID,"b2a")) 
 				printf("CONVERTED");
-			else if(callerID == "Reduce")
+			else if(!strcmp(callerID, "Reduce"))
 				printf("REDUCED");
-			else if(callerID == "Tile")
+			else if(!strcmp(callerID, "Tile"))
 				printf("TILED");
-			else if(callerID == "Assemble")
+			else if(!strcmp(callerID, "Assemble"))
 				printf("ASSEMBLED");
 		break;
 		
@@ -98,27 +98,27 @@ const char *filename, const char *miscMessage)
 		break;
 		case 101:
 		printf("Usage: ");
-			if(callerID == "Echo")
+			if(!strcmp(callerID, "Echo"))
 				printf("./pgmEcho inputImage.pgm outputImage.pgm");
-			if(callerID == "Comp") 
+			else if(!strcmp(callerID, "Comp"))
 				printf("./pgmComp inputImage.pgm inputImage.pgm");
-			if(callerID == "a2b")
+			else if(!strcmp(callerID, "a2b"))
 				printf("./pgma2b inputImage.pgm outputImage.pgm");
-			if(callerID == "b2a")
+			else if(!strcmp(callerID, "b2a"))
 				printf("./pgmb2a inputImage.pgm outputImage.pgm");
-			if(callerID == "Reduce")
+			else if(!strcmp(callerID, "Reduce"))
 				printf("./pgmReduce inputImage.pgm reduction_factor outputImage.pgm");
-			if(callerID == "Tile")
+			else if(!strcmp(callerID, "Tile"))
 				printf("./pgmTile inputImage.pgm tiling_factor outputImage_<row>_<column>.pgm");
-			if(callerID == "Assemble")
+			else if(!strcmp(callerID, "Assemble"))
 				printf("./pgmAssemble outputImage.pgm width height (row column inputImage.pgm)+");
 		break;
 	}
 	//Only printing the file name
 	//and/or message if they exist
-	if(filename != "")
+	if(strcmp(filename, ""))
 		printf(" (%s)", filename);
-	if(miscMessage != "")
+	if(strcmp(miscMessage, ""))
 		printf(" (%s)", miscMessage);
 	printf("\n");
 	return errorCode;

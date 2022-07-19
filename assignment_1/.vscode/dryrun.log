@@ -1,0 +1,19 @@
+make --dry-run --keep-going --print-directory
+make: Entering directory `/home/cserv1_a/soc_msc/sc21jr/source/repos/c/comp1921/assignment_1'
+ 
+make: *** No rule to make target `pgmEcho.c', needed by `pgmEcho.o'.
+
+gcc	-c -g -std=c99 -fmax-errors=1 -Wall -Werror	-o pgmImage.o	pgmImage.c	 	 
+gcc   -c -g -std=c99 -fmax-errors=1 -Wall -Werror	-o pgmErrors.o	pgmErrors.c
+gcc	-c -g -std=c99 -fmax-errors=1 -Wall -Werror	-o pgmRead.o	pgmRead.c 
+gcc	-c -g -std=c99 -fmax-errors=1 -Wall -Werror	-o pgmWrite.o	pgmWrite.c 
+ 
+make: *** No rule to make target `pgmComp.c', needed by `pgmComp.o'.
+make: *** No rule to make target `pgma2b.c', needed by `pgma2b.o'.
+make: *** No rule to make target `pgmb2a.c', needed by `pgmb2a.o'.
+
+make: Leaving directory `/home/cserv1_a/soc_msc/sc21jr/source/repos/c/comp1921/assignment_1'
+ 
+make: *** No rule to make target `pgmReduce.c', needed by `pgmReduce.o'.
+make: *** No rule to make target `pgmTile.c', needed by `pgmTile.o'.
+

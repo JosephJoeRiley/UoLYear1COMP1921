@@ -22,9 +22,7 @@ void writeContentsASCII(PgmImage input, FILE *file_to_write)
 		//get the position we are in and see if that position is 
 		//divisible by the width value
 		int colSplit = (nextGray - input.imageData + 1) % input.width;
-		
-		 fprintf(file_to_write, "%d%c", *nextGray, 
-		(colSplit? ' ' : '\n'));
+		 fprintf(file_to_write, "%d%c", *nextGray, (colSplit? ' ' : '\n'));
 	}
 }
 /*	PGMWRITE OUTLINE
@@ -38,17 +36,20 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 {
 	FILE *file_to_write = fopen(filename, "w");
 	
+	if(file_to_write == NULL)
+	{
+		printOutMsg(MISC_ERROR, "./pgmWrite", filename, "Writing to non-existent directory");
+	}
+
 	//Print the metadata to the output file
 	size_t nBytesWritten = fprintf(file_to_write, "%c%c\n%d %d\n%d\n", input.magicNumber[0], input.magicNumber[1], 
 	input.width, input.height, input.maxGray);
 
-	//We have a bad file if this metadata input fails
+	//We've failed in outputting if this metadata input fails
 	if(nBytesWritten < 0)
 	{
-		*return_value = BAD_FILENAME;
+		*return_value = FAILED_OUTPUT;
 	}
-
-
 
 	switch (input.magicNumber[1])
 	{
@@ -60,10 +61,15 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 		fclose(file_to_write);
 		break;
 	}
+	
+	if(nBytesWritten < 0)
+	{
+		*return_value = FAILED_OUTPUT;
+	}
 
 	//This only runs on success 
 	*return_value = 0;
-	printOutMsg(*return_value, "./pgmWrite", filename);
+	printOutMsg(*return_value, "./pgmWrite", filename, "");
 	return;
 
 }

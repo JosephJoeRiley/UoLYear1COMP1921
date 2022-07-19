@@ -105,7 +105,7 @@ void getASCIIContents(int *error_return, PgmImage *target, FILE *input)
 		{
 			fclose(input);
 			free(target->imageData);
-			printOutMsg(BAD_DATA, "./pgmRead", "");
+			*error_return = BAD_DATA;
 		}
 
 		*nextGray = (unsigned char) grayValue;
@@ -169,7 +169,7 @@ PgmImage pgmRead(const char *filename, int *err_value)
 	if( !(output.height >= MIN_IMAGE_DIMENSION && output.height <= MAX_IMAGE_DIMENSION) &&
 	!(output.width >= MIN_IMAGE_DIMENSION && output.width <= MAX_IMAGE_DIMENSION))
 	{
-		*err_value = BAD_DIMENSION;
+		*err_value = BAD_DIMENSIONS;
 		freeComments(output);
 		return createDefaultPgmObject();
 	}
@@ -186,7 +186,6 @@ PgmImage pgmRead(const char *filename, int *err_value)
 	//demorgan's-ing this for the same reasons as dimensions 
 	if (!(output.maxGray >= 1 && output.maxGray <= 255))
 	{
-		printf("%d\n", output.maxGray);
 		*err_value = BAD_MAX_GRAY;
 		freeComments(output);
 		return createDefaultPgmObject();
@@ -207,7 +206,7 @@ PgmImage pgmRead(const char *filename, int *err_value)
 	}
 
 	
-	printOutMsg(0, "./pgmRead", filename);
+	printOutMsg(0, "./pgmRead", filename, "");
 	return output;
 }
 
