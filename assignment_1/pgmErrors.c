@@ -33,7 +33,8 @@ const char *filename, const char *miscMessage)
 				printf("ECHOED");	
 			else if(!strcmp(callerID, "Echo"))
 				printf("IDENTICAL");
-			else if(!strcmp(callerID,"a2b") || !strcmp(callerID,"b2a")) 
+			else if(!strcmp(callerID,"a2b") || 
+			!strcmp(callerID,"b2a")) 
 				printf("CONVERTED");
 			else if(!strcmp(callerID, "Reduce"))
 				printf("REDUCED");
