@@ -2,14 +2,14 @@
 
 int comparePgms(PgmImage a, PgmImage b)
 {
-	int identical;
-	
+	return (a.imageData == b.imageData);
 }
 
 int main(int argc, char** argv)
 {
 	if(argc != 3)
 		return printOutMsg(USAGE_ERROR, argv[0], "", "")#include "pgmComp.h"
+	
 	
 	int errorReturn = 0;
 

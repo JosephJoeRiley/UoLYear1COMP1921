@@ -51,12 +51,15 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 		*return_value = FAILED_OUTPUT;
 	}
 
+	printf("Writing contents to a");
 	switch (input.magicNumber[1])
 	{
 	case '5':
+		printf("n ASCII pgm (%s)\n", filename);
 		writeContentsBinary(input, file_to_write, filename);
 		break;
 	case '2':
+		printf(" binary pgm (%s)\n", filename);
 		writeContentsASCII(input, file_to_write);
 		fclose(file_to_write);
 		break;
