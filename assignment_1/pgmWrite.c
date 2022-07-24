@@ -7,7 +7,7 @@ void writeContentsBinary(PgmImage input, FILE *input_file, const char *filename)
 	fclose(input_file);
 	FILE *file_to_write = fopen(filename, "ab");
 	fseek(file_to_write, dataStart, SEEK_SET);
-	fwrite(input.imageData,  sizeof(unsigned char),dataLength, file_to_write);
+	fwrite(input.imageData, sizeof(unsigned char), dataLength, file_to_write);
 }
 void writeContentsASCII(PgmImage input, FILE *file_to_write)
 {
@@ -54,14 +54,15 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 	printf("Writing contents to a");
 	switch (input.magicNumber[1])
 	{
-	case '5':
-		printf("n ASCII pgm (%s)\n", filename);
-		writeContentsBinary(input, file_to_write, filename);
-		break;
 	case '2':
-		printf(" binary pgm (%s)\n", filename);
+		printf("n ASCII pgm (%s)\n", filename);
 		writeContentsASCII(input, file_to_write);
 		fclose(file_to_write);
+		break;
+	case '5':
+		printf(" binary pgm (%s)\n", filename);
+		writeContentsBinary(input, file_to_write, filename);
+		//No need to close the file since writeContentsBinary already closes the file
 		break;
 	}
 	
@@ -70,9 +71,7 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 		*return_value = FAILED_OUTPUT;
 	}
 
-	//This only runs on success 
-	*return_value = 0;
-	printOutMsg(*return_value, "./pgmWrite", filename, "");
+	printOutMsg(*return_value,"./pgmWrite", filename, "");
 	return;
 
 }
