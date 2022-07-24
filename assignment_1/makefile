@@ -1,7 +1,7 @@
 #We will add later modules as they are implemented  
 CC=gcc
 CCFLAGS=-g -std=c99 -fmax-errors=1 -Wall -Werror
-MODULES=pgmImage.o pgmErrors.o pgmRead.o pgmWrite.o
+MODULES=pgmImage.o pgmErrors.o pgmRead.o pgmWrite.o, pgmConvert.o 
 MAINS=pgmEcho pgmComp pgma2b pgmb2a 
 TARGETS=pgmEcho pgmComp pgma2b pgmb2a 
 
@@ -34,7 +34,7 @@ pgmb2a:		pgmb2a.o	${MODULES}
 pgmEcho.o:	pgmEcho.c	pgmWrite.h pgmRead.h pgmImage.h pgmErrors.h
 	${CC}	-c ${CCFLAGS}	-o pgmEcho.o	pgmEcho.c 
 
-pgmComp.o:	pgmComp.c	pgmRead.h pgmImage.h pgmErrors.h
+pgmComp.o:	pgmComp.c	pgmRead.h pgmImage.h pgmErrors.h pgma2b.h
 	${CC}	-c ${CCFLAGS}	-o pgmComp.o	pgmComp.c 
 
 #pgmReduce.o: pgmReduce.c	pgmWrite.h pgmRead.h pgmImage.h pgmErrors.h

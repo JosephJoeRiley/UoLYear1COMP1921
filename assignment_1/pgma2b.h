@@ -4,5 +4,5 @@
 #include "pgmErrors.h"
 #include "pgmRead.h"
 #include "pgmWrite.h"
-int main(int argc, char** argv);
+PgmImage convertA2B(const char *outDir, PgmImage a, int *errorReturn);
 #endif //__PGM_A2B__
