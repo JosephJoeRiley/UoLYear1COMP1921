@@ -1,4 +1,4 @@
-fndef __PGM_COMP__
+#ifndef __PGM_COMP__
 #define __PGM_COMP__
 #include "pgmRead.h"
 int comparePgms(PgmImage a, PgmImage b);

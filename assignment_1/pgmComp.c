@@ -8,7 +8,7 @@ int comparePgms(PgmImage a, PgmImage b)
 int main(int argc, char** argv)
 {
 	if(argc != 3)
-		return printOutMsg(USAGE_ERROR, argv[0], "", "")#include "pgmComp.h"
+		return printOutMsg(USAGE_ERROR, argv[0], "", "");
 	
 	
 	int errorReturn = 0;
