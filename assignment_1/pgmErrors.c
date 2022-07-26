@@ -20,27 +20,27 @@ const char *filename, const char *miscMessage)
 	switch(errorCode)
 	{
 		case -1:
-		if(strcmp(callerID, "Compare"))
-			printf("DIFFERENT");
+		if(!strcmp(callerID, "Compare"))
+			printf("IDENTICAL");
 			errorCode = 0;
 		break;
 		case 0:		
 			if(!strcmp(callerID, "Read"))
 				printf("READ");
-			else if(!strcmp(callerID, "Write"))
+			if(!strcmp(callerID, "Write"))
 				printf("WRITTEN");
-			else if(!strcmp(callerID, "Echo"))
+			if(!strcmp(callerID, "Echo"))
 				printf("ECHOED");	
-			else if(!strcmp(callerID, "Echo"))
+			if(!strcmp(callerID, "Comp"))
 				printf("IDENTICAL");
-			else if(!strcmp(callerID,"a2b") || 
+			if(!strcmp(callerID,"a2b") || 
 			!strcmp(callerID,"b2a")) 
 				printf("CONVERTED");
-			else if(!strcmp(callerID, "Reduce"))
+			if(!strcmp(callerID, "Reduce"))
 				printf("REDUCED");
-			else if(!strcmp(callerID, "Tile"))
+			if(!strcmp(callerID, "Tile"))
 				printf("TILED");
-			else if(!strcmp(callerID, "Assemble"))
+			if(!strcmp(callerID, "Assemble"))
 				printf("ASSEMBLED");
 		break;
 		

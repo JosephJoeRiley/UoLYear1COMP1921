@@ -25,4 +25,5 @@ PgmImage createASCIINullDataPgm();
 void assignBasePgmValues(PgmImage *a);
 void printComments(PgmImage *this);
 void printImage(PgmImage *this);
+PgmImage copyPgm(PgmImage ref);
 #endif //__PGM_IMAGE__

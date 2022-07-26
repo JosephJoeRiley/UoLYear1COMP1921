@@ -5,14 +5,6 @@
 		Change the magic number of the resultant object from 5 to 2
 		Write the same object to the output file 
     */
-PgmImage convertB2A(const char *outDir, PgmImage a, int *errorReturn)
-{
-    a.magicNumber[1] = '2';
-    pgmWrite(outDir, a, errorReturn);
-    printOutMsg(*errorReturn, "./pgma2b", a.filename, outDir);
-    return a; 
-}
-
 int main(int argc, char** argv)
 {
     int return_value = -1;

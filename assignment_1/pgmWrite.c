@@ -66,12 +66,8 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 		break;
 	}
 	
-	if(nBytesWritten < 0)
-	{
-		*return_value = FAILED_OUTPUT;
-	}
-
-	printOutMsg(*return_value,"./pgmWrite", filename, "");
+	
+	printOutMsg(0,"./pgmWrite", filename, "");
 	return;
 
 }
