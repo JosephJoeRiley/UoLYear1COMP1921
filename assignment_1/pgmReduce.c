@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 		char c = (argv[2][counter++]);
 		unsigned int digit = c - '0';
 		
-		for(int index = 1; index <= numlen; index++)
+		for(int index = 1; index < numlen; index++)
 			digit *= 10;
 		
 		my_factor += digit;
