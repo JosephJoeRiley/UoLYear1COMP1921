@@ -57,9 +57,20 @@ void printComments(PgmImage *this)
 
 int reMallocData(PgmImage *this)
 {
-	this-> imageData = (unsigned char**) malloc((this->width * sizeof(unsigned char *)) * (this->height * sizeof(unsigned char)));
+	this->imageData = (unsigned char**) malloc(this->width * sizeof(unsigned char *));
+	for(int i = 0; i < this->height; i++)
+	{
+		this->imageData[i] = (unsigned char *) malloc(this->height * sizeof(unsigned char));
+		if(this->imageData[i] == NULL) {
+			free(this->imageData);
+			return printOutMsg(FAILED_MALLOC, "./pgmAllocate", this->filename, "");
+		}
+	}
 	if(this->imageData == NULL)
+	{
+		free(this->imageData);
 		return printOutMsg(FAILED_MALLOC, "./pgmAllocate", this->filename, "");
+	}
 	else 
 		return printOutMsg(0, "./pgmAllocate", this->filename, "");
 }

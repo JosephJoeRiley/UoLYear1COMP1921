@@ -95,13 +95,15 @@ void getASCIIContents(int *error_return, PgmImage *target, FILE *input)
 	{
 		for(int current_col = 0; current_col < target->height; current_col++)
 		{
-			if((fscanf(input, "%u", &(target->imageData[current_row][current_col])) != 1 ||
-			target->imageData[current_row][current_col] > target->maxGray || 
-			target->imageData[current_row][current_col] < 0))
-			{	
+			unsigned char myChar;
+			int scanCount = fscanf(input, "%u", &myChar);
+			//printf("Current pixel value: %d\n", myChar);
+			if(scanCount != 1 || myChar > target->maxGray || myChar < 0) {
 				*error_return = BAD_DATA;
 				return;
 			}
+			target->imageData[current_row][current_col] = myChar;	
+				
 		}
 	}
 }
