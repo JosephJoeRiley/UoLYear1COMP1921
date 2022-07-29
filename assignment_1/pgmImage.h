@@ -13,8 +13,8 @@ typedef struct pgmImage
 	unsigned int width;
 	unsigned int height;
 	unsigned int maxGray;
-	unsigned char *imageData;
 	const char *filename;
+	unsigned char **imageData;
 	char **comments;
 	unsigned int numComments;
 } PgmImage;
@@ -22,6 +22,7 @@ typedef struct pgmImage
 PgmImage createDefaultPgmObject();
 PgmImage createBinaryNullDataPgm();
 PgmImage createASCIINullDataPgm();
+int reMallocData(PgmImage *this);
 void assignBasePgmValues(PgmImage *a);
 void printComments(PgmImage *this);
 void printImage(PgmImage *this);

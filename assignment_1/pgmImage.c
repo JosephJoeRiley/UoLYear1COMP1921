@@ -18,9 +18,9 @@ PgmImage createDefaultPgmObject(void)
 	a.width = 0;
 	a.height = 0;
 	a.maxGray = DEFAULT_MAX_GRAY;
-	a.imageData = (unsigned char *) "";
+	a.imageData = (unsigned char **) "";
 	a.numComments = 0;
-	a.comments = (char**) malloc(MAX_COMMENT_AMOUNT * sizeof(char));
+	a.comments = (char**) malloc(MAX_COMMENT_AMOUNT * sizeof(char*));
 	a.filename = "Null.pgm";
 	return a;
 }
@@ -53,4 +53,13 @@ void printComments(PgmImage *this)
 	for(int i=0; i<this->numComments; ++i) {
 		printf("Data in comments[%d] = %s\n", i, this->comments[i]);
 	}
+}
+
+int reMallocData(PgmImage *this)
+{
+	this-> imageData = (unsigned char**) malloc((this->width * sizeof(unsigned char *)) * (this->height * sizeof(unsigned char)));
+	if(this->imageData == NULL)
+		return printOutMsg(FAILED_MALLOC, "./pgmAllocate", this->filename, "");
+	else 
+		return printOutMsg(0, "./pgmAllocate", this->filename, "");
 }

@@ -1,13 +1,13 @@
 #include "pgmImage.h"
 
-void writeContentsBinary(PgmImage input, FILE *input_file, const char *filename)
+void writeContentsBinary(PgmImage input, FILE *file_to_write)
 {
-	long dataStart = ftell(input_file);
+	long dataStart = ftell(file_to_write);
 	long dataLength = input.width * input.height * sizeof(unsigned char);
-	fclose(input_file);
-	FILE *file_to_write = fopen(filename, "ab");
+	fclose(file_to_write);
+	file_to_write = fopen(input.filename, "ab");
 	fseek(file_to_write, dataStart, SEEK_SET);
-	fwrite(input.imageData, sizeof(unsigned char), dataLength, file_to_write);
+	fwrite(input.imageData, sizeof(unsigned char**), dataLength, file_to_write);
 }
 void writeContentsASCII(PgmImage input, FILE *file_to_write)
 {
@@ -15,15 +15,17 @@ void writeContentsASCII(PgmImage input, FILE *file_to_write)
 	//then print an additional new line	
 	//This is based on my code from pgmRead, which I wrote first
 	//However, the body is largely changed and cased on pgmEchoCommented
-	unsigned int dataLength = input.width * input.height * sizeof(unsigned char);
-	for(unsigned char *nextGray = input.imageData; 
-	nextGray < (input.imageData + dataLength); nextGray++)
-	{
-		//get the position we are in and see if that position is 
-		//divisible by the width value
-		int colSplit = (nextGray - input.imageData + 1) % input.width;
-		 fprintf(file_to_write, "%d%c", *nextGray, (colSplit? ' ' : '\n'));
-	}
+	for(int pixel_row = 0; pixel_row < input.width; ++pixel_row)
+		for(int pixel_col = 0; pixel_col < input.height; ++pixel_col)
+		{
+		 	if(fprintf(file_to_write, "%d%c", input.imageData[pixel_row][pixel_col], 
+			(pixel_col == input.height? ' ' : '\n')))
+			{
+				fclose(file_to_write);
+				free(input.imageData);
+				printOutMsg(BAD_DATA, "./pgmRead", input.filename, "");
+			}
+		}
 }
 /*	PGMWRITE OUTLINE
 Check pgmObject_a's contents are valid
@@ -61,7 +63,7 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 		break;
 	case '5':
 		printf(" binary pgm (%s)\n", filename);
-		writeContentsBinary(input, file_to_write, filename);
+		writeContentsBinary(input, file_to_write);
 		//No need to close the file since writeContentsBinary already closes the file
 		break;
 	}

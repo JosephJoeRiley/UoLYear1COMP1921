@@ -66,52 +66,42 @@ int pgmScanWrapper(int input, FILE *file, char **comment, unsigned int *count)
 */
 
 //Returns the image data of the file in a binary format 
-void getBinaryContents(int *error_return, PgmImage *target_pgm, FILE *input_file, const char *filename)
+void getBinaryContents(int *error_return, PgmImage *target_pgm, FILE *input_file)
 {
 	//We're using the pointer of the file so we can adjust it
 	long dataStart = ftell(input_file);
 	long dataLength = target_pgm->width * target_pgm->height * sizeof(unsigned char);
 	fclose(input_file);
-	FILE *file_to_read = fopen(filename, "rb");
+	FILE *file_to_read = fopen(target_pgm->filename, "rb");
 	//Put our file pointer so we skip the metadata
 	fseek(file_to_read, dataStart, SEEK_SET);
 	//Allocate the memory for reading data
-	target_pgm->imageData = (unsigned char *) malloc(dataLength);
-	if(target_pgm->imageData == NULL)
-	{
-		*error_return = FAILED_MALLOC;
-	}
-	fread(target_pgm->imageData, sizeof(unsigned char*),dataLength, file_to_read);
+	*error_return = reMallocData(target_pgm);
+	fread(target_pgm->imageData, sizeof(unsigned char**),dataLength, file_to_read);
 	*error_return = 0;
 }
 
 void getASCIIContents(int *error_return, PgmImage *target, FILE *input)
 {
-	long dataLength = target->width * target->height * sizeof(unsigned char);
-	target->imageData = (unsigned char *) malloc(dataLength);
+	*error_return = reMallocData(target);
 
-	if(target->imageData == NULL)
+	if(*error_return)
 	{
-		*error_return = FAILED_MALLOC;
+		return;
 	}
-
-	for(unsigned char *nextGray = target->imageData; 
-	nextGray < (target->imageData + dataLength); nextGray++)
-	{
-		unsigned int grayValue = 0;
-		
-		if(fscanf(input, " %u", &grayValue) != 1 ||
-		grayValue > target->maxGray)
+	long dataLength = target->width * target->height * sizeof(unsigned char);
+	for(int pixel_row = 0; pixel_row < target->width; ++pixel_row)
+		for(int pixel_col = 0; pixel_col < target->height; ++pixel_col)
 		{
-			fclose(input);
-			free(target->imageData);
-			*error_return = BAD_DATA;
+			if(fscanf(input, " %u", (unsigned int *) &target->imageData[pixel_row][pixel_col]) != 1 ||
+			target->imageData[pixel_row][pixel_col] > target->maxGray)
+			{
+				fclose(input);
+				free(target->imageData);
+				printOutMsg(BAD_DATA, "./pgmRead", target->filename, "");
+			}
 		}
 
-		*nextGray = (unsigned char) grayValue;
-	}
-
-	*error_return = 0;
 }
 
 //Returns a pgmImage object that is equivalent
@@ -123,11 +113,12 @@ PgmImage pgmRead(const char *filename, int *err_value)
 	PgmImage output = createDefaultPgmObject();
 	FILE *file_to_read = fopen(filename, "r");
 	if(file_to_read == NULL)
-		{
-			*err_value = BAD_FILENAME;
-			fclose(file_to_read);
-			return createDefaultPgmObject();
-		}
+	{
+		*err_value = BAD_FILENAME;
+		printOutMsg(BAD_FILENAME, "./pgmRead", filename, "");
+		fclose(file_to_read);
+		return createDefaultPgmObject();
+	}
     output.filename = filename;
 //This next bit with the magic number accounts for endianess:
 //all paths will return a value since I'm assuming it's one or the other always
@@ -195,13 +186,10 @@ PgmImage pgmRead(const char *filename, int *err_value)
 	switch (output.magicNumber[1])
 	{
 	case '5':
-		getBinaryContents(err_value, &output, file_to_read, filename);
+		getBinaryContents(err_value, &output, file_to_read);
 		break;
 	case '2':
 		getASCIIContents(err_value, &output, file_to_read);
-		fclose(file_to_read);
-		if(*err_value)
-			return createDefaultPgmObject();
 		break;
 	}
 

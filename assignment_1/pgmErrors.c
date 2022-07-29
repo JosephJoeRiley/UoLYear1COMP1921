@@ -42,6 +42,8 @@ const char *filename, const char *miscMessage)
 				printf("TILED");
 			if(!strcmp(callerID, "Assemble"))
 				printf("ASSEMBLED");
+			if(!strcmp(callerID, "Allocate"))
+				printf("DATA ALLOCATED");
 		break;
 		
 		break;
@@ -77,7 +79,7 @@ const char *filename, const char *miscMessage)
 			break;
 			//Malloc of data for pointer failed 
  			case FAILED_MALLOC:
-				printf("Image Malloc FaMiscellaneous iled");
+				printf("Image Malloc Failed");
 			break;
 		 	//Reading in image data failed
  			case BAD_DATA:
