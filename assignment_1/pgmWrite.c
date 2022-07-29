@@ -19,11 +19,11 @@ void writeContentsASCII(PgmImage input, FILE *file_to_write)
 		for(int pixel_col = 0; pixel_col < input.height; ++pixel_col)
 		{
 		 	if(fprintf(file_to_write, "%d%c", input.imageData[pixel_row][pixel_col], 
-			(pixel_col == input.height? ' ' : '\n')))
+			(pixel_col == input.height? '\n' : ' ')))
 			{
 				fclose(file_to_write);
-				free(input.imageData);
 				printOutMsg(BAD_DATA, "./pgmRead", input.filename, "");
+				return;
 			}
 		}
 }
@@ -52,7 +52,7 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 	{
 		*return_value = FAILED_OUTPUT;
 	}
-
+	
 	printf("Writing contents to a");
 	switch (input.magicNumber[1])
 	{
@@ -69,6 +69,7 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 	}
 	
 	
+		
 	printOutMsg(0,"./pgmWrite", filename, "");
 	return;
 

@@ -96,13 +96,14 @@ void getASCIIContents(int *error_return, PgmImage *target, FILE *input)
 		for(int current_col = 0; current_col < target->height; current_col++)
 		{
 			unsigned char myChar;
-			int scanCount = fscanf(input, "%u", &myChar);
+			int scanCount = fscanf(input, "%u", &myChar);	
+			target->imageData[current_row][current_col] = myChar;	
 			//printf("Current pixel value: %d\n", myChar);
 			if(scanCount != 1 || myChar > target->maxGray || myChar < 0) {
+				printf("\nResult of fscanf: %d\n Gray value read: %d\n");
 				*error_return = BAD_DATA;
 				return;
 			}
-			target->imageData[current_row][current_col] = myChar;	
 				
 		}
 	}
@@ -196,9 +197,9 @@ PgmImage pgmRead(const char *filename, int *err_value)
 		getASCIIContents(err_value, &output, file_to_read);
 		break;
 	}
-	
-	if(err_value != 0)
+	if(*err_value != 0)
 	{
+		printf("Bad data!\n");
 		freeComments(output);
 		return createDefaultPgmObject();		
 	}
