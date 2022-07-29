@@ -77,7 +77,7 @@ void getBinaryContents(int *error_return, PgmImage *target_pgm, FILE *input_file
 	fseek(file_to_read, dataStart, SEEK_SET);
 	//Allocate the memory for reading data
 	*error_return = reMallocData(target_pgm);
-	fread(target_pgm->imageData, sizeof(unsigned char**),dataLength, file_to_read);
+	fread(target_pgm->imageData, sizeof(unsigned char**), dataLength, file_to_read);
 	*error_return = 0;
 }
 
@@ -90,18 +90,20 @@ void getASCIIContents(int *error_return, PgmImage *target, FILE *input)
 		return;
 	}
 	long dataLength = target->width * target->height * sizeof(unsigned char);
-	for(int pixel_row = 0; pixel_row < target->width; ++pixel_row)
-		for(int pixel_col = 0; pixel_col < target->height; ++pixel_col)
+	
+	for(int current_row = 0; current_row < target->width; current_row++)
+	{
+		for(int current_col = 0; current_col < target->height; current_col++)
 		{
-			if(fscanf(input, " %u", (unsigned int *) &target->imageData[pixel_row][pixel_col]) != 1 ||
-			target->imageData[pixel_row][pixel_col] > target->maxGray)
-			{
-				fclose(input);
-				free(target->imageData);
-				printOutMsg(BAD_DATA, "./pgmRead", target->filename, "");
+			if((fscanf(input, "%u", &(target->imageData[current_row][current_col])) != 1 ||
+			target->imageData[current_row][current_col] > target->maxGray || 
+			target->imageData[current_row][current_col] < 0))
+			{	
+				*error_return = BAD_DATA;
+				return;
 			}
 		}
-
+	}
 }
 
 //Returns a pgmImage object that is equivalent
@@ -192,7 +194,12 @@ PgmImage pgmRead(const char *filename, int *err_value)
 		getASCIIContents(err_value, &output, file_to_read);
 		break;
 	}
-
+	
+	if(err_value != 0)
+	{
+		freeComments(output);
+		return createDefaultPgmObject();		
+	}
 	
 	printOutMsg(0, "./pgmRead", filename, "");
 	return output;
