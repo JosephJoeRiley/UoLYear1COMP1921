@@ -22,9 +22,10 @@ typedef struct pgmImage
 PgmImage createDefaultPgmObject();
 PgmImage createBinaryNullDataPgm();
 PgmImage createASCIINullDataPgm();
+PgmImage copyPgm(PgmImage ref);
 int reMallocData(PgmImage *this);
 void assignBasePgmValues(PgmImage *a);
 void printComments(PgmImage *this);
 void printImage(PgmImage *this);
-PgmImage copyPgm(PgmImage ref);
+void printInConsole(PgmImage this);
 #endif //__PGM_IMAGE__

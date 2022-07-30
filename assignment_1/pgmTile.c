@@ -19,27 +19,26 @@ void writeTile(PgmImage source, const char *origin_file_name, unsigned int facto
     for(int i = 0; i < (factor_squared); ++i)
     {
         tiles[i] = copyPgm(source); 
-        tiles[i].width = (source.width / factor);
+        tiles[i].filename = createFileName(source.filename, i/factor, i%factor);
+		tiles[i].width = (source.width / factor);
         tiles[i].height = (source.height / factor);
-        if((i/ factor) != 0)
-            tiles[i].width += source.width % factor;
-        if((i % factor) != 0)
-            tiles[i].height += (source.height % factor);
-		unsigned int tile_size = tiles[i].width * tiles[i].height;
-		tiles[i].imageData =  (unsigned char *) malloc(tile_size * sizeof(unsigned char *));
-        if(tiles[i].imageData == NULL)
-            printOutMsg(FAILED_MALLOC, "./pgmTile", origin_file_name, "");
-    }
+		if(i == factor_squared)
+		{
+			tiles[i].width += source.width % factor;
+			tiles[i].height += source.height % factor;
+		}
+		if((return_value = reMallocData(&tiles[i])) != 0) 
+		{
+			printOutMsg(FAILED_MALLOC, "./pgmTile", tiles[i].filename, "");
+		}
+	}
 
 
 	//Trying to  find a way so we cycle through every pixel in the image and copy
 	//the pixel we're reading to the appropriate tile by doing a calculation on 
 	//the pixel's location. Ideas;
-	//	;
-	for(int currPixel = 0, tile_index = 0; currPixel < source_size && tile_index < factor_squared; ++currPixel, ++tile_index)
-	{
-		tiles[tile_index].imageData[currPixel] = source.imageData[currPixel];
-	}
+	//	
+	
 
 	for(int i = 0; i < factor_squared; i++) {
 		pgmWrite(createFileName(origin_file_name, (i/ factor), (i  % factor), 

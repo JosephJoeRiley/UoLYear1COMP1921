@@ -36,7 +36,7 @@ PgmImage copyPgm(PgmImage b)
 	a.imageData = b.imageData;
 	a.numComments = b.numComments;
 	a.comments = b.comments;
-	a.filename = b.filename;
+	snprintf((char *) a.filename, strlen(b.filename + 9),"Copy_of_%s", b.filename);
 	return a;
 }
 void printInConsole(PgmImage ref) 

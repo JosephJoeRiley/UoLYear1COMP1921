@@ -3,28 +3,25 @@
 PgmImage pgmReduce(const char *read_filename, unsigned int factor, int *return_value)
 {
 	PgmImage input = pgmRead(read_filename, return_value);
+	printInConsole(input);
 	PgmImage output = copyPgm(input);
 	output.width /= factor;
 	output.height /= factor;
-	unsigned int output_dataLen = output.width * output.height;
-	output.imageData = (unsigned char *) malloc(output_dataLen * sizeof(unsigned char *));
+	printInConsole(output);
 	//Return if this malloc fails
-	if(output.imageData == NULL)
+	if(reMallocData(&output) != 0)
 	{
 		*return_value = FAILED_MALLOC;
 		return createDefaultPgmObject();
 	}
 
  	//Set each char of our output images's data         
-	for(int index = 0; index < (output.width * output.height); index++)
-	{
-		//This formula we're using with index 
-		//jumps to every pixel that
-		//is divisble by the given factor
-		output.imageData[index] = input.imageData[
-		index * (factor - 1)];
-
-	}
+	for (int row_index = 0, row_output = 0; row_index < input.width; row_index += factor, row_output++)
+		for (int col_index = 0, col_output = 0; col_index < input.height; col_index += factor, col_output++)	
+		{
+			printf("\nRow: %d Column: %d\n",  row_output, col_output);
+			output.imageData[row_index][col_index] = input.imageData[row_output][col_output];
+		}
 	
 	//return our pgm 
 	return output;
@@ -55,8 +52,9 @@ int main(int argc, char** argv)
 	}	
 
 	PgmImage result = pgmReduce(argv[1], my_factor, &return_val);
-	pgmWrite(argv[3], result, &dummy_val);
-
+	if(return_val == 0)
+		pgmWrite(argv[3], result, &dummy_val);
+	
 	printOutMsg(return_val, argv[0], argv[1], argv[3]);
 	return printOutMsg(return_val, argv[0], "", ""); 
 } 
