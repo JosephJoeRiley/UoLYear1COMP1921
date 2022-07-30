@@ -18,13 +18,15 @@ void writeContentsASCII(PgmImage input, FILE *file_to_write)
 	for(int pixel_row = 0; pixel_row < input.width; ++pixel_row)
 		for(int pixel_col = 0; pixel_col < input.height; ++pixel_col)
 		{
-			int printReturn = fprintf(file_to_write, "%d%c", input.imageData[pixel_row][pixel_col],  (pixel_col == input.height? '\n' : ' '));
-		 	if(printReturn != 2)
+			int printReturn = fprintf(file_to_write, "%d%c", 
+			input.imageData[pixel_row][pixel_col],  
+			(pixel_col == input.height? '\n' : ' '));
+		 	/*if(printReturn != 2)
 			{
 				fclose(file_to_write);
 				printOutMsg(BAD_DATA, "./pgmRead", input.filename, "");
 				return;
-			}
+			} */
 		}
 
 	fclose(file_to_write);
