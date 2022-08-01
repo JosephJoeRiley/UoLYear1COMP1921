@@ -22,7 +22,7 @@ typedef struct pgmImage
 PgmImage createDefaultPgmObject();
 PgmImage createBinaryNullDataPgm();
 PgmImage createASCIINullDataPgm();
-PgmImage copyPgm(PgmImage ref);
+PgmImage copyPgmMetadata(PgmImage ref);
 int reMallocData(PgmImage *this);
 void assignBasePgmValues(PgmImage *a);
 void printComments(PgmImage *this);

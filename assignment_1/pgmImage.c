@@ -25,7 +25,7 @@ PgmImage createDefaultPgmObject(void)
 	return a;
 }
 
-PgmImage copyPgm(PgmImage b)
+PgmImage copyPgmMetadata(PgmImage b)
 {
 	PgmImage a;
 	a.magicNumber[0] = (char) b.magicNumber[0];
@@ -33,7 +33,7 @@ PgmImage copyPgm(PgmImage b)
 	a.width = b.width;
 	a.height = b.height;
 	a.maxGray = b.maxGray;
-	a.imageData = b.imageData;
+	a.imageData = (unsigned char **) "";
 	a.numComments = b.numComments;
 	a.comments = b.comments;
 	a.filename = b.filename;
