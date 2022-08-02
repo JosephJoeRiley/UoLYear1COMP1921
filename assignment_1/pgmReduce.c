@@ -4,8 +4,7 @@ PgmImage pgmReduce(const char *read_filename, unsigned int factor, int *return_v
 {
 	const char *temp_filename = read_filename;
 	PgmImage input = pgmRead(read_filename, return_value);
-	printInConsole(input);
-	PgmImage output = copyPgm(input);
+	PgmImage output = copyPgmMetadata(input);
 	output.width /= factor;
 	output.height /= factor;
 	//Return if this malloc fails
@@ -15,14 +14,12 @@ PgmImage pgmReduce(const char *read_filename, unsigned int factor, int *return_v
 		return createDefaultPgmObject();
 	}
 
- 	//Set each char of our input images's data         
+ 	//Set each char of our output images's data         
 	for(int output_row = 0; output_row < output.width; output_row++)
-	{
-		for(int output_col = 0; output_col < output.height; output_col++)
+		for(int output_col = 0; output_col < output.height; output_col++) 
 		{
-			(output.imageData[output_row][output_col]) = (input.imageData[(output_row * factor)][(output_col *factor)]);
+			output.imageData[output_row][output_col] = input.imageData[output_row * factor][output_col * factor];
 		}
-	}
 	
 	//return our pgm 
 	return output;

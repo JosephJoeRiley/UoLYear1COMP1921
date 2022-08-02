@@ -25,50 +25,48 @@ const char *createFileName(const char *spec, unsigned int x, unsigned int y, cha
 void writeTile(PgmImage source, const char *origin_file_name, const char *target_file_name, unsigned int factor, int *return_value)
 {
     unsigned int factor_squared = factor * factor;
-    PgmImage tiles[factor][factor];
+    PgmImage tiles[factor_squared];
 	unsigned int source_size = source.width * source.height;
 	
 	int origin_x, origin_y;
 	origin_x = 0;
 	origin_y = 0;
 
-    for(int i = 0; i < factor; ++i)
+    for(int i = 0; i < factor_squared; ++i)
     {
-        /*
-		if((i/ factor) == (factor - 1))
-            tiles[i].width += source.width % factor;
-        if((i % factor) == (factor - 1))
-            tiles[i].height += (source.height % factor);
-		*/
-		for(int j = 0; j < factor; ++j)
+		tiles[i] = copyPgmMetadata(source); 
+        tiles[i].width = (source.width / factor);
+        tiles[i].height = (source.height / factor);
+		if(i / factor == (factor - 1))
+			tiles[i].width += (source.width % factor);
+		if(i % factor == (factor - 1))
+			tiles[i].height += (source.height % factor);
+		tiles[i].filename = createFileName(target_file_name, i / factor, i % factor, source.magicNumber[1]);		
+		if((*return_value = reMallocData(&tiles[i])) != 0) 
 		{
-			tiles[i][j] = copyPgmMetadata(source); 
-        	tiles[i][j].width = (source.width / factor);
-        	tiles[i][j].height = (source.height / factor);
-			if(i == (factor - 1))
-				tiles[i][j].width += (source.width % factor);
-			if(j == (factor - 1))
-				tiles[i][j].height += (source.height % factor);
-			
-			tiles[i][j].filename = createFileName(target_file_name, i, j, source.magicNumber[1]);		
-			if((*return_value = reMallocData(&tiles[i][j])) != 0) 
-			{
-				printOutMsg(FAILED_MALLOC, "./pgmTile", tiles[i][j].filename, "");
-			}
-			//Write image data:
-			//i is current column
-			//j is current row
-			//origin image pixel: [i * factor + pixel_x][j * factor + pixel_y]
-			for(int pixel_x = 0; pixel_x < tiles[i][j].width; pixel_x++)
-				for(int pixel_y = 0; pixel_y < tiles[i][j].height; pixel_y++)
-				{
-					tiles[i][j].imageData[pixel_x][pixel_y] = source.imageData[(i * (factor - 1)) + pixel_x][(j * (factor - 1)) + pixel_y];
-				}
-			
-			pgmWrite(tiles[i][j].filename, tiles[i][j], return_value);
+			printOutMsg(FAILED_MALLOC, "./pgmTile", tiles[i].filename, "");
 		}
+	}
 
-		
+	int tileCounter = 0;
+	for (int currOriginRowStart = 0; currOriginRowStart < source.width; currOriginRowStart += (source.width / factor))
+	{
+		for (int currOriginColStart = 0; currOriginColStart < source.height; currOriginColStart += (source.height / factor))
+		{
+			for(int currOriginRow = currOriginRowStart; currOriginRow < (currOriginRowStart + tiles[tileCounter].width ); currOriginRow++)
+				for(int currOriginCol = currOriginColStart; currOriginCol < (currOriginColStart + tiles[tileCounter].height); currOriginCol++)
+					tiles[tileCounter].imageData[currOriginRow - currOriginRowStart][currOriginCol - currOriginColStart] = source.imageData[currOriginRow][currOriginCol];
+
+
+			++tileCounter;
+		}
+	}
+ 
+
+
+	 for(int i = 0; i < factor_squared; ++i)
+    {
+			pgmWrite(tiles[i].filename, tiles[i], return_value);
 	}
 
 	// int origin_x, origin_y, currPgmI;
