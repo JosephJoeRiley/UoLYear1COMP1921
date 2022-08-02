@@ -35,17 +35,17 @@ void writeTile(PgmImage source, const char *origin_file_name, const char *target
     for(int i = 0; i < factor_squared; ++i)
     {
 		tiles[i] = copyPgmMetadata(source); 
-        tiles[i].width = (source.width / factor);
-        tiles[i].height = (source.height / factor);
-		if(i / factor == (factor - 1))
-			tiles[i].width += (source.width % factor);
-		if(i % factor == (factor - 1))
-			tiles[i].height += (source.height % factor);
 		tiles[i].filename = createFileName(target_file_name, i / factor, i % factor, source.magicNumber[1]);		
+		tiles[i].width = (source.width / factor);
+        tiles[i].height = (source.height / factor);
 		if((*return_value = reMallocData(&tiles[i])) != 0) 
 		{
 			printOutMsg(FAILED_MALLOC, "./pgmTile", tiles[i].filename, "");
 		}
+		if(i / factor == (factor - 1))
+			tiles[i].width += (source.width % factor);
+		if(i % factor == (factor - 1))
+			tiles[i].height += (source.height % factor);
 	}
 
 	int tileCounter = 0;
@@ -53,11 +53,13 @@ void writeTile(PgmImage source, const char *origin_file_name, const char *target
 	{
 		for (int currOriginColStart = 0; currOriginColStart < source.height; currOriginColStart += (source.height / factor))
 		{
+			
 			for(int currOriginRow = currOriginRowStart; currOriginRow < (currOriginRowStart + tiles[tileCounter].width ); currOriginRow++)
-				for(int currOriginCol = currOriginColStart; currOriginCol < (currOriginColStart + tiles[tileCounter].height); currOriginCol++)
+				for(int currOriginCol = currOriginColStart; currOriginCol < (currOriginColStart + tiles[tileCounter].height); currOriginCol++) 
+				{
 					tiles[tileCounter].imageData[currOriginRow - currOriginRowStart][currOriginCol - currOriginColStart] = source.imageData[currOriginRow][currOriginCol];
-
-
+				}
+				
 			++tileCounter;
 		}
 	}
@@ -66,30 +68,8 @@ void writeTile(PgmImage source, const char *origin_file_name, const char *target
 
 	 for(int i = 0; i < factor_squared; ++i)
     {
-			pgmWrite(tiles[i].filename, tiles[i], return_value);
+		pgmWrite(tiles[i].filename, tiles[i], return_value);
 	}
-
-	// int origin_x, origin_y, currPgmI;
-	// origin_y = origin_x = currPgmI = 0;
-
-	// for(int currTileX = 0, currTileY = 0; origin_x < source.width && currPgmI < factor_squared; origin_x++)
-	// {
-
-	// 	if(currTileY == tiles[currPgmI].height)
-	// 		currTileY = 0;
-	// 	currTileX++;
-	// 	if(currTileY == tiles[currPgmI].height && currTileX == tiles[currPgmI].width)
-	// 		++currPgmI;
-
-	// 	for(;origin_y < source.height; origin_y++)
-	// 	{
-	// 		if(currTileX == tiles[currPgmI].width)
-	// 			currTileX = 0;
-
-	// 		tiles[currPgmI].imageData[currTileX][currTileY++] = source.imageData[origin_x][origin_y];
-	// 	}
-	// }
-
 }
 
 int main(int argc, char ** argv)
@@ -97,7 +77,7 @@ int main(int argc, char ** argv)
 
 	int return_val = 0;
 	//Return a usage error if we have the wrong number of values
-	if(argc == 0)
+	if(argc == 1)
         return printOutMsg(USAGE_ERROR, argv[0], "", "");
     else if(argc != 4)	
 		return printOutMsg(BAD_ARG_NO, argv[0], "", "");

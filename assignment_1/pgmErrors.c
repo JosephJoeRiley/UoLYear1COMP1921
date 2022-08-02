@@ -24,7 +24,7 @@ const char *filename, const char *miscMessage)
 			printf("IDENTICAL");
 			errorCode = 0;
 		break;
-		case 0:		
+		case 0:	
 			if(!strcmp(callerID, "Read"))
 				printf("READ");
 			if(!strcmp(callerID, "Write"))

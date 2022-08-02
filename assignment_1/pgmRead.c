@@ -77,8 +77,13 @@ void getBinaryContents(int *error_return, PgmImage *target_pgm, FILE *input_file
 	fseek(file_to_read, dataStart, SEEK_SET);
 	//Allocate the memory for reading data
 	*error_return = reMallocData(target_pgm);
-	fread(target_pgm->imageData, sizeof(unsigned char**),dataLength, file_to_read);
-	*error_return = 0;
+	FILE *binary_file = fopen(target_pgm->filename, "ab");
+	fseek(binary_file, dataStart, SEEK_SET);
+	
+	for (int i = 0; i < target_pgm->width; i++)
+		fread(target_pgm->height, sizeof(unsigned char), target_pgm->height, binary_file);
+
+	fclose(binary_file);	
 }
 
 void getASCIIContents(int *error_return, PgmImage *target, FILE *input)

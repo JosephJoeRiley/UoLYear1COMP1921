@@ -1,13 +1,18 @@
 #include "pgmImage.h"
 
-void writeContentsBinary(PgmImage input, FILE *file_to_write)
+void writeContentsBinary(PgmImage *input, FILE *file_to_write)
 {
 	long dataStart = ftell(file_to_write);
-	long dataLength = input.width * input.height * sizeof(unsigned char);
 	fclose(file_to_write);
-	file_to_write = fopen(input.filename, "ab");
-	fseek(file_to_write, dataStart, SEEK_SET);
-	fwrite(input.imageData, sizeof(unsigned char**), dataLength, file_to_write);
+	FILE *binary_file = fopen(input->filename, "ab");
+	fseek(binary_file, dataStart, SEEK_SET);
+	
+	for (int i = 0; i < input->width; i++)
+	{
+		fwrite(input->imageData[i], sizeof(unsigned char), input->height, binary_file);
+		printf("%s\n", (char *) input->imageData[i]);
+	}
+	fclose(binary_file);	
 }
 void writeContentsASCII(PgmImage input, FILE *file_to_write)
 {
@@ -21,12 +26,6 @@ void writeContentsASCII(PgmImage input, FILE *file_to_write)
 			int printReturn = fprintf(file_to_write, "%d%c", 
 			input.imageData[pixel_row][pixel_col],  
 			(pixel_col == input.height? '\n' : ' '));
-		 	/*if(printReturn != 2)
-			{
-				fclose(file_to_write);
-				printOutMsg(BAD_DATA, "./pgmRead", input.filename, "");
-				return;
-			} */
 		}
 
 	fclose(file_to_write);
@@ -54,6 +53,7 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 	//We've failed in outputting if this metadata input fails
 	if(nBytesWritten < 0)
 	{
+		printOutMsg(FAILED_OUTPUT, "./pgmWrite", filename, "");
 		*return_value = FAILED_OUTPUT;
 	}
 	
@@ -66,8 +66,7 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 		break;
 	case '5':
 		printf(" binary pgm (%s)\n", filename);
-		writeContentsBinary(input, file_to_write);
-		//No need to close the file since writeContentsBinary already closes the file
+		writeContentsBinary(&input, file_to_write);
 		break;
 	}
 	
