@@ -24,7 +24,7 @@ int comparePgms(const char *aDir, const char* bDir, int *errorReturn)
 
 int main(int argc, char** argv)
 {
-	if(argc == 0)
+	if(argc == 1)
             return printOutMsg(USAGE_ERROR, argv[0], "", "");
     	else if(argc != 3)
             return printOutMsg(BAD_ARG_NO, argv[0], "", "");
@@ -35,9 +35,8 @@ int main(int argc, char** argv)
 	comparePgms(argv[1], argv[2], &errorReturn);	
 	
 	
-	if(errorReturn != 0 && errorReturn != 1)
+	if(errorReturn > 0)
 		return printOutMsg(errorReturn, argv[0], "", "");
-	
-
-	return printOutMsg(errorReturn - 1, argv[0], "", "");
+	else
+		return printOutMsg(errorReturn - 1, argv[0], "", "");
 }

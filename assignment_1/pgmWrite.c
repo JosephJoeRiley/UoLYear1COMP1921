@@ -1,20 +1,19 @@
 #include "pgmImage.h"
 
-void writeContentsBinary(PgmImage *input, FILE *file_to_write)
+void writeContentsBinary(int *err_val, PgmImage *input, FILE *file_to_write, const char* write_filename)
 {
 	long dataStart = ftell(file_to_write);
 	fclose(file_to_write);
-	FILE *binary_file = fopen(input->filename, "ab");
+	FILE *binary_file = fopen(write_filename, "ab");
 	fseek(binary_file, dataStart, SEEK_SET);
 	
 	for (int i = 0; i < input->width; i++)
 	{
-		fwrite(input->imageData[i], sizeof(unsigned char), input->height, binary_file);
-		printf("%s\n", (char *) input->imageData[i]);
+		fwrite(input->imageData[i], sizeof(unsigned char), input->height * sizeof(unsigned char), binary_file);
 	}
 	fclose(binary_file);	
 }
-void writeContentsASCII(PgmImage input, FILE *file_to_write)
+void writeContentsASCII(int *err_val, PgmImage input, FILE *file_to_write)
 {
 	//Loop through every pixel in the file: if we have a new line
 	//then print an additional new line	
@@ -26,6 +25,11 @@ void writeContentsASCII(PgmImage input, FILE *file_to_write)
 			int printReturn = fprintf(file_to_write, "%d%c", 
 			input.imageData[pixel_row][pixel_col],  
 			(pixel_col == input.height? '\n' : ' '));
+			if(printReturn != 2)
+			{
+				*err_val = BAD_DATA;
+				fclose(file_to_write);
+			}
 		}
 
 	fclose(file_to_write);
@@ -62,17 +66,17 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 	{
 	case '2':
 		printf("n ASCII pgm (%s)\n", filename);
-		writeContentsASCII(input, file_to_write);
+		writeContentsASCII(return_value, input, file_to_write);
 		break;
 	case '5':
 		printf(" binary pgm (%s)\n", filename);
-		writeContentsBinary(&input, file_to_write);
+		writeContentsBinary(return_value, &input, file_to_write, filename);
 		break;
 	}
 	
 	
 		
-	printOutMsg(0,"./pgmWrite", filename, "");
+	printOutMsg(*return_value,"./pgmWrite", filename, "");
 	return;
 
 }

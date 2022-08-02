@@ -55,7 +55,7 @@ const char *filename, const char *miscMessage)
 		{
 			///Wrong number of arguments (but not zero arguments)
  			case BAD_ARG_NO:
-				printf("Bad Argument Count");
+				printf("Bad Argument Count ");
 			break;
 			//Read filename does not exist
  			case BAD_FILENAME:
@@ -67,7 +67,7 @@ const char *filename, const char *miscMessage)
 			break;
 			//Comment line is corrupted or otherwise incorrect
  			case BAD_COMMENT:
-				printf("Bad Comment Line");
+				printf("Bad Comment Line ");
 			break;
 			//Width and/or height are outside the min_max range
  			case BAD_DIMENSIONS:
@@ -75,27 +75,27 @@ const char *filename, const char *miscMessage)
 			break;
 			//Max gray does not equal 255
  			case BAD_MAX_GRAY:
-				printf("Bad Max Gray Value");
+				printf("Bad Max Gray Value ");
 			break;
 			//Malloc of data for pointer failed 
  			case FAILED_MALLOC:
-				printf("Image Malloc Failed");
+				printf("Image Malloc Failed ");
 			break;
 		 	//Reading in image data failed
  			case BAD_DATA:
-				printf("Bad Data");
+				printf("Bad Data ");
 			break;
 			//Writing in image data failed
  			case FAILED_OUTPUT:
-				printf("Output Failed");
+				printf("Output Failed ");
 			break;
 			//Assembly layout went wrong
  			case BAD_LAYOUT:
-				printf("Bad Layout");
+				printf("Bad Layout ");
 			break;
 			//Any other error
  			case MISC_ERROR:
-				printf("Miscellaneous");
+				printf("Miscellaneous ");
 			break;
 		}
 		break;
@@ -115,14 +115,15 @@ const char *filename, const char *miscMessage)
 				printf("./pgmTile inputImage.pgm tiling_factor outputImage_<row>_<column>.pgm");
 			else if(!strcmp(callerID, "Assemble"))
 				printf("./pgmAssemble outputImage.pgm width height (row column inputImage.pgm)+");
+			errorCode = 0;
 		break;
 	}
 	//Only printing the file name
 	//and/or message if they exist
 	if(strcmp(filename, ""))
-		printf(" (%s)", filename);
+		printf("(%s)", filename);
 	if(strcmp(miscMessage, ""))
-		printf(" (%s)", miscMessage);
+		printf("(%s)", miscMessage);
 	printf("\n");
 	return errorCode;
 }

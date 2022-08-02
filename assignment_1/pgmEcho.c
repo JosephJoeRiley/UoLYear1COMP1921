@@ -11,6 +11,7 @@ int main(int argc, char** argv)
     {
             return printOutMsg(BAD_ARG_NO, argv[0], "", "");
     }
+    
     //We don't need to initialise this:
     //we will always call pgmRead() in which
     //all paths assign a value to it

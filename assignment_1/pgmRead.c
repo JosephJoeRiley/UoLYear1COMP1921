@@ -14,21 +14,28 @@ void freeComments(PgmImage this)
 //A collection of string.h functions that
 //skips the line and writes it into a comment 
 //string that is handled in the caller function
-void writeComment(char **comment, FILE *file)
+void writeComment(char **comment, FILE *file, int *error_return)
 {
-
 	char *buffer = (char *) malloc(MAX_COMMENT_LINE_LENGTH * sizeof(char));
+	if(buffer == NULL) 
+	{
+		char c;
+		while ((c = fgetc(file)) != '\n')
+		;
+		*error_return = BAD_COMMENT;
+		return; 
+	}
 	fgets(buffer, MAX_COMMENT_LINE_LENGTH, file);
 	*comment = (char *) malloc((strlen(buffer) + 1) * sizeof(char));
 	strcpy(*comment, buffer);
 }
 
 //Wrapper of fgetc() to check if we land on the start of a comment
-char pgmCharWrapper(char c, FILE *file, char **comment, unsigned int *count)
+char pgmCharWrapper(char c, FILE *file, char **comment, unsigned int *count, int *err)
 {
 	if(c == '#') {
 		++*count;
-		writeComment(comment, file);
+		writeComment(comment, file, err);
 		c = fgetc(file);
 	}	
 	return c;
@@ -38,15 +45,15 @@ char pgmCharWrapper(char c, FILE *file, char **comment, unsigned int *count)
 //This returns a null value if it finds a comment 
 //and a success value if it doesn't find one:
 //giving the file pointer the green light to continue scanning
-int pgmScanWrapper(int input, FILE *file, char **comment, unsigned int *count)
+int pgmScanWrapper(int input, FILE *file, char **comment, unsigned int *count, int *err)
 {
 	if(fgetc(file) == '#') 
 	{
 		++*count;
-		writeComment(comment, file);
+		writeComment(comment, file, err);
 		return 0;
 	}
-	return 1;
+	return input;
 }
 
 /*
@@ -66,34 +73,26 @@ int pgmScanWrapper(int input, FILE *file, char **comment, unsigned int *count)
 */
 
 //Returns the image data of the file in a binary format 
-void getBinaryContents(int *error_return, PgmImage *target_pgm, FILE *input_file)
+void getBinaryContents(int *err_val, PgmImage *target_pgm, FILE *input_file)
 {
 	//We're using the pointer of the file so we can adjust it
 	long dataStart = ftell(input_file);
 	long dataLength = target_pgm->width * target_pgm->height * sizeof(unsigned char);
 	fclose(input_file);
-	FILE *file_to_read = fopen(target_pgm->filename, "rb");
-	//Put our file pointer so we skip the metadata
-	fseek(file_to_read, dataStart, SEEK_SET);
 	//Allocate the memory for reading data
-	*error_return = reMallocData(target_pgm);
-	FILE *binary_file = fopen(target_pgm->filename, "ab");
+	FILE *binary_file = fopen(target_pgm->filename, "rb");
 	fseek(binary_file, dataStart, SEEK_SET);
 	
-	for (int i = 0; i < target_pgm->width; i++)
-		fread(target_pgm->height, sizeof(unsigned char), target_pgm->height, binary_file);
+	for (int i = 0; i < target_pgm->width; i++) 
+	{
+		fread(target_pgm->imageData[i], sizeof(unsigned char), target_pgm->height * sizeof(unsigned char), binary_file);
+	}
 
 	fclose(binary_file);	
 }
 
-void getASCIIContents(int *error_return, PgmImage *target, FILE *input)
+void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 {
-	*error_return = reMallocData(target);
-
-	if(*error_return)
-	{
-		return;
-	}
 	long dataLength = target->width * target->height * sizeof(unsigned char);
 	for(int pixel_row = 0; pixel_row < target->width; ++pixel_row)
 		for(int pixel_col = 0; pixel_col < target->height; ++pixel_col)
@@ -103,10 +102,11 @@ void getASCIIContents(int *error_return, PgmImage *target, FILE *input)
 			{
 				fclose(input);
 				free(target->imageData);
-				printOutMsg(BAD_DATA, "./pgmRead", target->filename, "");
+				*err_val = BAD_DATA;
+				return;
 			}
 		}
-
+	fclose(input);
 }
 
 //Returns a pgmImage object that is equivalent
@@ -115,13 +115,13 @@ void getASCIIContents(int *error_return, PgmImage *target, FILE *input)
 PgmImage pgmRead(const char *filename, int *err_value)
 {
 	int scanSuccess = 0;
+	*err_value = 0;
 	PgmImage output = createDefaultPgmObject();
 	FILE *file_to_read = fopen(filename, "r");
 	if(file_to_read == NULL)
 	{
 		*err_value = BAD_FILENAME;
-		printOutMsg(BAD_FILENAME, "./pgmRead", filename, "");
-		fclose(file_to_read);
+		printOutMsg(*err_value, "./pgmRead", filename, "");
 		return createDefaultPgmObject();
 	}
     output.filename = filename;
@@ -129,12 +129,12 @@ PgmImage pgmRead(const char *filename, int *err_value)
 //all paths will return a value since I'm assuming it's one or the other always
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 	output.magicNumber[0] = pgmCharWrapper(fgetc(file_to_read), 
-	file_to_read, &(output.comments[output.numComments]), &(output.numComments));
+	file_to_read, &(output.comments[output.numComments]), &(output.numComments), err_value);
 	//Unprotected since no one would put a comment between the two magic number chars
 	output.magicNumber[1] = fgetc(file_to_read);
 #else
 	output.magicNumber[1] = pgmCharWrapper(fgetc(file_to_read), 
-	file_to_read, &(output.comments[output.numComments]), &(output.numComments));
+	file_to_read, &(output.comments[output.numComments]), &(output.numComments), err_value);
 	output.magicNumber[0] = fgetc(file_to_read);
 #endif	
 
@@ -147,25 +147,37 @@ PgmImage pgmRead(const char *filename, int *err_value)
 	{
 		*err_value = BAD_MAGIC_NO;
 		fclose(file_to_read);
-		//it would be a pain to put this in the handle error function
-		//since we're handling what the program returns 
 		return createDefaultPgmObject();
 	}
 
+	if(*err_value)
+	{
+		printOutMsg(*err_value, "./pgmRead", filename, "");
+		freeComments(output);
+		return createDefaultPgmObject();
+	}
 	//in case we have multiple comments before the dimensions are stated
 	//we run the comment check however many times we need to
 	do
 	{
 		scanSuccess = pgmScanWrapper(fscanf(file_to_read, " %u %u", &(output.width), 
-		&(output.height)), file_to_read, &(output.comments[output.numComments]), &(output.numComments));
+		&(output.height)), file_to_read, &(output.comments[output.numComments]), &(output.numComments), err_value);
 	} while (!scanSuccess);
 
+   if(*err_value)
+	{
+		printOutMsg(*err_value, "./pgmRead", filename, "");
+		freeComments(output);
+		return createDefaultPgmObject();
+	}
 
-	//demorgan's-ing this since they are ranges after all 
-	if( !(output.height >= MIN_IMAGE_DIMENSION && output.height <= MAX_IMAGE_DIMENSION) &&
-	!(output.width >= MIN_IMAGE_DIMENSION && output.width <= MAX_IMAGE_DIMENSION))
+	if( scanSuccess != 2 ||
+	(output.height < MIN_IMAGE_DIMENSION || output.height > MAX_IMAGE_DIMENSION) 
+	||
+	(output.width < MIN_IMAGE_DIMENSION || output.width > MAX_IMAGE_DIMENSION))
 	{
 		*err_value = BAD_DIMENSIONS;
+		printOutMsg(*err_value, "./pgmRead", filename, "");
 		freeComments(output);
 		return createDefaultPgmObject();
 	}
@@ -175,18 +187,32 @@ PgmImage pgmRead(const char *filename, int *err_value)
 	do 
 	{	
 		scanSuccess = pgmScanWrapper(fscanf(file_to_read, " %u", &(output.maxGray)), 
-		file_to_read, &(output.comments[output.numComments]), &(output.numComments));
+		file_to_read, &(output.comments[output.numComments]), &(output.numComments), err_value);
 	} while(!scanSuccess);
-	
 
-	//demorgan's-ing this for the same reasons as dimensions 
-	if (!(output.maxGray >= 1 && output.maxGray <= 255))
+	if(*err_value)
+	{
+		printOutMsg(*err_value, "./pgmRead", filename, "");
+		freeComments(output);
+		return createDefaultPgmObject();
+	}
+
+	if (scanSuccess != 1 ||
+		(output.maxGray < 1 || output.maxGray > DEFAULT_MAX_GRAY))
 	{
 		*err_value = BAD_MAX_GRAY;
+		printOutMsg(*err_value, "./pgmRead", filename, "");
 		freeComments(output);
 		return createDefaultPgmObject();
 	} 
 
+	*err_value = reMallocData(&output);
+	if(*err_value)
+	{
+		printOutMsg(*err_value, "./pgmRead", filename, "");
+		freeComments(output);
+		return createDefaultPgmObject();
+	}
 	//This is a switch statement to make it easier to read
 	switch (output.magicNumber[1])
 	{
@@ -198,8 +224,8 @@ PgmImage pgmRead(const char *filename, int *err_value)
 		break;
 	}
 
-	
-	printOutMsg(0, "./pgmRead", filename, "");
+	printOutMsg(*err_value, "./pgmRead", filename, "");
+	freeComments(output);
 	return output;
 }
 

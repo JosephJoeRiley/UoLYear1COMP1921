@@ -7,6 +7,16 @@ PgmImage pgmReduce(const char *read_filename, unsigned int factor, int *return_v
 	PgmImage output = copyPgmMetadata(input);
 	output.width /= factor;
 	output.height /= factor;
+	int ratio_x, ratio_y;
+	ratio_x = ratio_y = 0;
+	if(input.width > input.height)
+	{
+		ratio_x  = ceil((double) input.width / input.height);
+	}
+	else if (input.height > input.width)
+	{
+		ratio_y = ceil((double) input.height / input.width);
+	}
 	//Return if this malloc fails
 	if(reMallocData(&output) != 0)
 	{
@@ -15,11 +25,9 @@ PgmImage pgmReduce(const char *read_filename, unsigned int factor, int *return_v
 	}
 
  	//Set each char of our output images's data         
-	for(int output_row = 0; output_row < output.width; output_row++)
+	for(int output_row = 0; output_row < (output.width); output_row++)
 		for(int output_col = 0; output_col < output.height; output_col++) 
-		{
 			output.imageData[output_row][output_col] = input.imageData[output_row * factor][output_col * factor];
-		}
 	
 	//return our pgm 
 	return output;

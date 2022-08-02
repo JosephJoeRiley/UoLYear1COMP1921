@@ -5,7 +5,7 @@ MODULES=pgmImage.o pgmErrors.o pgmRead.o pgmWrite.o pgmConvert.o
 MAINS=pgmEcho pgmComp pgma2b pgmb2a pgmReduce pgmTile
 TARGETS=pgmEcho pgmComp pgma2b pgmb2a pgmReduce pgmTile
 
-all:	${TARGETS}
+all:	${TARGETS} 
 
 
 clean:
@@ -13,7 +13,7 @@ clean:
 
 
 pgmReduce:	pgmReduce.o ${MODULES}
-	${CC}	${CCFLAGS}	-o pgmReduce pgmReduce.o ${MODULES}
+	${CC}	${CCFLAGS}	-o pgmReduce pgmReduce.o ${MODULES} -lm
 
 pgmEcho:	pgmEcho.o	${MODULES}
 	${CC}	${CCFLAGS}	-o pgmEcho	pgmEcho.o ${MODULES}
@@ -28,7 +28,7 @@ pgmb2a:		pgmb2a.o	${MODULES}
 	${CC}	${CCFLAGS}	-o pgmb2a	pgmb2a.o ${MODULES}
 
 pgmTile:	pgmTile.o	${MODULES}
-	${CC}	${CCFLAGS}	-o pgmTile pgmTile.o ${MODULES}
+	${CC}	${CCFLAGS}	-o pgmTile pgmTile.o ${MODULES} -lm
 
 
 pgmEcho.o:	pgmEcho.c	pgmWrite.h pgmRead.h pgmImage.h pgmErrors.h
@@ -37,11 +37,11 @@ pgmEcho.o:	pgmEcho.c	pgmWrite.h pgmRead.h pgmImage.h pgmErrors.h
 pgmComp.o:	pgmComp.c	pgmRead.h pgmImage.h pgmErrors.h pgma2b.h
 	${CC}	-c ${CCFLAGS}	-o pgmComp.o	pgmComp.c 
 
-pgmReduce.o: pgmReduce.c	pgmWrite.h pgmRead.h pgmImage.h pgmErrors.h
-	${CC}	-c ${CCFLAGS}	-o pgmReduce.o	pgmReduce.c 
+pgmReduce.o: pgmReduce.c	pgmWrite.h pgmRead.h pgmImage.h pgmErrors.h 
+	${CC}	-c ${CCFLAGS}	-o pgmReduce.o	pgmReduce.c	  
 
 pgmTile.o: pgmTile.c	pgmWrite.h pgmRead.h pgmImage.h pgmErrors.h
-	${CC}	-c ${CCFLAGS}	-o pgmTile.o	pgmTile.c 
+	${CC}	-c ${CCFLAGS}	-o pgmTile.o	pgmTile.c	   
 
 pgma2b.o:	pgma2b.c	pgmRead.h pgmWrite.h pgmErrors.h pgmImage.h
 	${CC}	-c ${CCFLAGS}	-o pgma2b.o		pgma2b.c 	

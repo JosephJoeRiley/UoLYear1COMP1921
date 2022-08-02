@@ -1,5 +1,6 @@
 #ifndef  __PGM_REDUCE__
 #define __PGM_REDUCE__
+#include <math.h>
 #include "pgmImage.h"
 #include "pgmErrors.h"
 #include "pgmRead.h"
