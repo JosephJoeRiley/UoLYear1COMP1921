@@ -17,8 +17,6 @@ void writeContentsASCII(int *err_val, PgmImage input, FILE *file_to_write)
 {
 	//Loop through every pixel in the file: if we have a new line
 	//then print an additional new line	
-	//This is based on my code from pgmRead, which I wrote first
-	//However, the body is largely changed and cased on pgmEchoCommented
 	for(int pixel_row = 0; pixel_row < input.width; ++pixel_row)
 		for(int pixel_col = 0; pixel_col < input.height; ++pixel_col)
 		{

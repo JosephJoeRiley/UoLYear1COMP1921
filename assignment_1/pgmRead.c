@@ -93,7 +93,6 @@ void getBinaryContents(int *err_val, PgmImage *target_pgm, FILE *input_file)
 
 void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 {
-	long dataLength = target->width * target->height * sizeof(unsigned char);
 	for(int pixel_row = 0; pixel_row < target->width; ++pixel_row)
 		for(int pixel_col = 0; pixel_col < target->height; ++pixel_col)
 		{
@@ -172,9 +171,9 @@ PgmImage pgmRead(const char *filename, int *err_value)
 	}
 
 	if( scanSuccess != 2 ||
-	(output.height < MIN_IMAGE_DIMENSION || output.height > MAX_IMAGE_DIMENSION) 
+	(output.height < MIN_IMAGE_DIMENSION || output.height >= MAX_IMAGE_DIMENSION) 
 	||
-	(output.width < MIN_IMAGE_DIMENSION || output.width > MAX_IMAGE_DIMENSION))
+	(output.width < MIN_IMAGE_DIMENSION || output.width >= MAX_IMAGE_DIMENSION))
 	{
 		*err_value = BAD_DIMENSIONS;
 		printOutMsg(*err_value, "./pgmRead", filename, "");
