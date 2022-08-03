@@ -25,7 +25,7 @@ void writeContentsASCII(int *err_val, PgmImage input, FILE *file_to_write)
 			(pixel_col == input.height? '\n' : ' '));
 			if(printReturn != 2)
 			{
-				*err_val = BAD_DATA;
+				*err_val = FAILED_OUTPUT;
 				fclose(file_to_write);
 			}
 		}
@@ -45,7 +45,8 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 	
 	if(file_to_write == NULL)
 	{
-		printOutMsg(MISC_ERROR, "./pgmWrite", filename, "Writing to non-existent directory");
+		*return_value = BAD_FILENAME;
+		return;
 	}
 
 	//Print the metadata to the output file
@@ -55,8 +56,8 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 	//We've failed in outputting if this metadata input fails
 	if(nBytesWritten < 0)
 	{
-		printOutMsg(FAILED_OUTPUT, "./pgmWrite", filename, "");
 		*return_value = FAILED_OUTPUT;
+		return;
 	}
 	
 	printf("Writing contents to a");
@@ -72,9 +73,8 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 		break;
 	}
 	
-	
 		
-	printOutMsg(*return_value,"./pgmWrite", filename, "");
+	//printOutMsg(*return_value,"./pgmWrite", filename, "");
 	return;
 
 }

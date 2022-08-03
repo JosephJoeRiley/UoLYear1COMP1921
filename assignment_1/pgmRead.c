@@ -96,7 +96,8 @@ void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 	for(int pixel_row = 0; pixel_row < target->width; ++pixel_row)
 		for(int pixel_col = 0; pixel_col < target->height; ++pixel_col)
 		{
-			if(fscanf(input, " %u", (unsigned int *) &target->imageData[pixel_row][pixel_col]) != 1 ||
+			if(pgmScanWrapper(fscanf(input, " %u", (unsigned int *) &target->imageData[pixel_row][pixel_col]), input,
+			target->comments, &(target->numComments), err_val) != 1 ||
 			target->imageData[pixel_row][pixel_col] > target->maxGray)
 			{
 				fclose(input);
@@ -104,6 +105,13 @@ void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 				*err_val = BAD_DATA;
 				return;
 			}
+		}
+		if (fgetc(input) != EOF)
+		{
+			fclose(input);
+			free(target->imageData);
+			*err_val = BAD_DATA;
+			return;
 		}
 	fclose(input);
 }
@@ -151,7 +159,6 @@ PgmImage pgmRead(const char *filename, int *err_value)
 
 	if(*err_value)
 	{
-		printOutMsg(*err_value, "./pgmRead", filename, "");
 		freeComments(output);
 		return createDefaultPgmObject();
 	}
@@ -165,7 +172,6 @@ PgmImage pgmRead(const char *filename, int *err_value)
 
    if(*err_value)
 	{
-		printOutMsg(*err_value, "./pgmRead", filename, "");
 		freeComments(output);
 		return createDefaultPgmObject();
 	}
@@ -176,7 +182,6 @@ PgmImage pgmRead(const char *filename, int *err_value)
 	(output.width < MIN_IMAGE_DIMENSION || output.width >= MAX_IMAGE_DIMENSION))
 	{
 		*err_value = BAD_DIMENSIONS;
-		printOutMsg(*err_value, "./pgmRead", filename, "");
 		freeComments(output);
 		return createDefaultPgmObject();
 	}
@@ -191,7 +196,6 @@ PgmImage pgmRead(const char *filename, int *err_value)
 
 	if(*err_value)
 	{
-		printOutMsg(*err_value, "./pgmRead", filename, "");
 		freeComments(output);
 		return createDefaultPgmObject();
 	}
@@ -200,7 +204,6 @@ PgmImage pgmRead(const char *filename, int *err_value)
 		(output.maxGray < 1 || output.maxGray > DEFAULT_MAX_GRAY))
 	{
 		*err_value = BAD_MAX_GRAY;
-		printOutMsg(*err_value, "./pgmRead", filename, "");
 		freeComments(output);
 		return createDefaultPgmObject();
 	} 
@@ -208,7 +211,6 @@ PgmImage pgmRead(const char *filename, int *err_value)
 	*err_value = reMallocData(&output);
 	if(*err_value)
 	{
-		printOutMsg(*err_value, "./pgmRead", filename, "");
 		freeComments(output);
 		return createDefaultPgmObject();
 	}
@@ -221,6 +223,12 @@ PgmImage pgmRead(const char *filename, int *err_value)
 	case '2':
 		getASCIIContents(err_value, &output, file_to_read);
 		break;
+	}
+
+	if(*err_value)
+	{
+		freeComments(output);
+		return createDefaultPgmObject();
 	}
 
 	printOutMsg(*err_value, "./pgmRead", filename, "");

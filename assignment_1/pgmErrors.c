@@ -25,10 +25,10 @@ const char *filename, const char *miscMessage)
 			errorCode = 0;
 		break;
 		case 0:	
-			if(!strcmp(callerID, "Read"))
-				printf("READ");
-			if(!strcmp(callerID, "Write"))
-				printf("WRITTEN");
+			//if(!strcmp(callerID, "Read"))
+				//printf("READ");
+			//if(!strcmp(callerID, "Write"))
+				//printf("WRITTEN");
 			if(!strcmp(callerID, "Echo"))
 				printf("ECHOED");	
 			if(!strcmp(callerID, "Comp"))
@@ -42,8 +42,8 @@ const char *filename, const char *miscMessage)
 				printf("TILED");
 			if(!strcmp(callerID, "Assemble"))
 				printf("ASSEMBLED");
-			if(!strcmp(callerID, "Allocate"))
-				printf("DATA ALLOCATED");
+			//if(!strcmp(callerID, "Allocate"))
+				//printf("DATA ALLOCATED");
 		break;
 		
 		break;
