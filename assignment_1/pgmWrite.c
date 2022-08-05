@@ -73,7 +73,6 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 		break;
 	}
 	
-		
 	//printOutMsg(*return_value,"./pgmWrite", filename, "");
 	return;
 

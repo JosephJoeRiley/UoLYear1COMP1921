@@ -103,6 +103,7 @@ void getBinaryContents(int *err_val, PgmImage *target_pgm, FILE *input_file)
 void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 {
 	for(int pixel_row = 0; pixel_row < target->width; ++pixel_row)
+	{
 		for(int pixel_col = 0; pixel_col < target->height; ++pixel_col)
 		{
 			int scanCount = 0;
@@ -119,6 +120,9 @@ void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 				}
 			}
 		}
+	}
+	if(!feof(input));
+		*err_val = BAD_DATA;
 	fclose(input);
 }
 
