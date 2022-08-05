@@ -26,6 +26,12 @@ void writeComment(char **comment, FILE *file, int *error_return)
 		return; 
 	}
 	fgets(buffer, MAX_COMMENT_LINE_LENGTH, file);
+	if(buffer[strlen(buffer) - 1] != '\n' || buffer[strlen(buffer) - 1] != EOF)
+	{
+		*error_return = BAD_COMMENT;
+		return; 
+	}
+	printf("%s\n", buffer);
 	*comment = (char *) malloc((strlen(buffer) + 1) * sizeof(char));
 	strcpy(*comment, buffer);
 }
@@ -96,21 +102,25 @@ void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 	for(int pixel_row = 0; pixel_row < target->width; ++pixel_row)
 		for(int pixel_col = 0; pixel_col < target->height; ++pixel_col)
 		{
-			if(pgmScanWrapper(fscanf(input, " %u", (unsigned int *) &target->imageData[pixel_row][pixel_col]), input,
-			target->comments, &(target->numComments), err_val) != 1 ||
+			if(pgmScanWrapper(fscanf(input, " %u", (unsigned int *) &target->imageData[pixel_row][pixel_col]), 
+			input, target->comments, &(target->numComments), err_val) != 1 || *err_val == 4 ||
 			target->imageData[pixel_row][pixel_col] > target->maxGray)
 			{
 				fclose(input);
 				free(target->imageData);
-				*err_val = BAD_DATA;
+				printf("Error value: %d\n", *err_val);
+				if(*err_val != BAD_COMMENT)
+					*err_val = BAD_DATA;
 				return;
 			}
 		}
-		if (fgetc(input) != EOF)
+		if (pgmCharWrapper(fgetc(input), input, target->comments, &target->numComments, err_val) != EOF)
 		{
 			fclose(input);
 			free(target->imageData);
-			*err_val = BAD_DATA;
+			printf("Error value: %d\n", *err_val);
+			if(*err_val != BAD_COMMENT)
+				*err_val = BAD_DATA;
 			return;
 		}
 	fclose(input);
