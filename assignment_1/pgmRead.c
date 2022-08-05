@@ -14,7 +14,7 @@ void freeComments(PgmImage this)
 //A collection of string.h functions that
 //skips the line and writes it into a comment 
 //string that is handled in the caller function
-void writeComment(char **comment, FILE *file, int *error_return)
+void writeComment(char **comment, int comment_index,  FILE *file, int *error_return)
 {
 	char *buffer = (char *) malloc(MAX_COMMENT_LINE_LENGTH * sizeof(char));
 	if(buffer == NULL) 
@@ -26,22 +26,25 @@ void writeComment(char **comment, FILE *file, int *error_return)
 		return; 
 	}
 	fgets(buffer, MAX_COMMENT_LINE_LENGTH, file);
-	if(buffer[strlen(buffer) - 1] != '\n' || buffer[strlen(buffer) - 1] != EOF)
+	if(buffer[strlen(buffer) - 1] == '\n' || buffer[strlen(buffer) - 1] == EOF)
+	{
+		comment[comment_index] = (char *) malloc((strlen(buffer)) * sizeof(char));
+		strcpy(comment[comment_index], buffer);
+		return;
+	}
+	else 
 	{
 		*error_return = BAD_COMMENT;
 		return; 
 	}
-	printf("%s\n", buffer);
-	*comment = (char *) malloc((strlen(buffer) + 1) * sizeof(char));
-	strcpy(*comment, buffer);
 }
 
 //Wrapper of fgetc() to check if we land on the start of a comment
-char pgmCharWrapper(char c, FILE *file, char **comment, unsigned int *count, int *err)
+char pgmCharWrapper(char c, FILE *file, PgmImage *image, int *err)
 {
 	if(c == '#') {
-		++*count;
-		writeComment(comment, file, err);
+		++image->numComments;
+		writeComment(image->comments, image->numComments - 1,  file, err);
 		c = fgetc(file);
 	}	
 	return c;
@@ -49,14 +52,14 @@ char pgmCharWrapper(char c, FILE *file, char **comment, unsigned int *count, int
 
 //Wrapper for fscanf to check if we land on a comment
 //This returns a null value if it finds a comment 
-//and a success value if it doesn't find one:
+//and a the number of values witten in if it doesn't find one:
 //giving the file pointer the green light to continue scanning
-int pgmScanWrapper(int input, FILE *file, char **comment, unsigned int *count, int *err)
+int pgmScanWrapper(int input, FILE *file, PgmImage *image, int *err)
 {
 	if(fgetc(file) == '#') 
 	{
-		++*count;
-		writeComment(comment, file, err);
+		++image->numComments;
+		writeComment(image->comments, image->numComments - 1, file, err);
 		return 0;
 	}
 	return input;
@@ -102,26 +105,18 @@ void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 	for(int pixel_row = 0; pixel_row < target->width; ++pixel_row)
 		for(int pixel_col = 0; pixel_col < target->height; ++pixel_col)
 		{
-			if(pgmScanWrapper(fscanf(input, " %u", (unsigned int *) &target->imageData[pixel_row][pixel_col]), 
-			input, target->comments, &(target->numComments), err_val) != 1 || *err_val == 4 ||
-			target->imageData[pixel_row][pixel_col] > target->maxGray)
+			int scanCount = 0;
+			while((scanCount = pgmScanWrapper(fscanf(input, " %u", 
+			(unsigned int *) &target->imageData[pixel_row][pixel_col]), input, target, err_val)) != 1)
 			{
-				fclose(input);
-				free(target->imageData);
-				printf("Error value: %d\n", *err_val);
-				if(*err_val != BAD_COMMENT)
+				if(*err_val == 4)
+					return;
+				else if (target->imageData[pixel_row][pixel_col] > target->maxGray || 
+				target->imageData[pixel_row][pixel_col] < 1);
+				{
 					*err_val = BAD_DATA;
-				return;
+				}
 			}
-		}
-		if (pgmCharWrapper(fgetc(input), input, target->comments, &target->numComments, err_val) != EOF)
-		{
-			fclose(input);
-			free(target->imageData);
-			printf("Error value: %d\n", *err_val);
-			if(*err_val != BAD_COMMENT)
-				*err_val = BAD_DATA;
-			return;
 		}
 	fclose(input);
 }
@@ -146,7 +141,7 @@ PgmImage pgmRead(const char *filename, int *err_value)
 //all paths will return a value since I'm assuming it's one or the other always
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 	output.magicNumber[0] = pgmCharWrapper(fgetc(file_to_read), 
-	file_to_read, &(output.comments[output.numComments]), &(output.numComments), err_value);
+	file_to_read, &output, err_value);
 	//Unprotected since no one would put a comment between the two magic number chars
 	output.magicNumber[1] = fgetc(file_to_read);
 #else
@@ -177,7 +172,7 @@ PgmImage pgmRead(const char *filename, int *err_value)
 	do
 	{
 		scanSuccess = pgmScanWrapper(fscanf(file_to_read, " %u %u", &(output.width), 
-		&(output.height)), file_to_read, &(output.comments[output.numComments]), &(output.numComments), err_value);
+		&(output.height)), file_to_read, &output, err_value);
 	} while (!scanSuccess);
 
    if(*err_value)
@@ -201,7 +196,7 @@ PgmImage pgmRead(const char *filename, int *err_value)
 	do 
 	{	
 		scanSuccess = pgmScanWrapper(fscanf(file_to_read, " %u", &(output.maxGray)), 
-		file_to_read, &(output.comments[output.numComments]), &(output.numComments), err_value);
+		file_to_read, &output, err_value);
 	} while(!scanSuccess);
 
 	if(*err_value)

@@ -17,18 +17,18 @@ void writeContentsASCII(int *err_val, PgmImage input, FILE *file_to_write)
 {
 	//Loop through every pixel in the file: if we have a new line
 	//then print an additional new line	
-	for(int pixel_row = 0; pixel_row < input.width; ++pixel_row)
+	for(int pixel_row = 0; pixel_row < input.width; ++pixel_row) {
 		for(int pixel_col = 0; pixel_col < input.height; ++pixel_col)
 		{
-			int printReturn = fprintf(file_to_write, "%d%c", 
-			input.imageData[pixel_row][pixel_col],  
-			(pixel_col == input.height? '\n' : ' '));
-			if(printReturn != 2)
+			int printReturn = fprintf(file_to_write, "%d ", 
+			input.imageData[pixel_row][pixel_col]);
+			if(printReturn < 0)
 			{
 				*err_val = FAILED_OUTPUT;
 				fclose(file_to_write);
 			}
 		}
+	}
 
 	fclose(file_to_write);
 }
