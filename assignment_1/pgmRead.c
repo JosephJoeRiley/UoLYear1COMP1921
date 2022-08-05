@@ -106,13 +106,14 @@ void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 		for(int pixel_col = 0; pixel_col < target->height; ++pixel_col)
 		{
 			int scanCount = 0;
-			while((scanCount = pgmScanWrapper(fscanf(input, " %u", 
+			if((scanCount = pgmScanWrapper(fscanf(input, " %u", 
 			(unsigned int *) &target->imageData[pixel_row][pixel_col]), input, target, err_val)) != 1)
 			{
 				if(*err_val == 4)
 					return;
 				else if (target->imageData[pixel_row][pixel_col] > target->maxGray || 
-				target->imageData[pixel_row][pixel_col] < 1);
+				target->imageData[pixel_row][pixel_col] < 1 ||
+				feof(input));
 				{
 					*err_val = BAD_DATA;
 				}
