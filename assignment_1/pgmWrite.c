@@ -21,13 +21,22 @@ void writeContentsASCII(int *err_val, PgmImage input, FILE *file_to_write)
 	for(int pixel_row = 0; pixel_row < input.width; ++pixel_row) {
 		for(int pixel_col = 0; pixel_col < input.height; ++pixel_col)
 		{
-			int printReturn = fprintf(file_to_write, "%d ", 
-			input.imageData[pixel_row][pixel_col]);
-			if(printReturn < 0)
+			int grayVal = input.imageData[pixel_row][pixel_col];
+			char digit[3] = {'0', '0', '0'};
+			for(int i = 2; i >= 0 && *err_val == 0; i--)
 			{
-				*err_val = FAILED_OUTPUT;
-				fclose(file_to_write);
+				if(i == 2 || (digit[i] - '0') > 0)
+				{
+					int printReturn = fprintf(file_to_write, "%c ", 
+					input.imageData[pixel_row][pixel_col]);
+					if(printReturn < 0)
+					{
+						*err_val = FAILED_OUTPUT;
+					}		
+				}
 			}
+			if(eri
+			
 		}
 	}
 
