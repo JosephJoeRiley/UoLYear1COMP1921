@@ -9,7 +9,8 @@ void writeContentsBinary(int *err_val, PgmImage *input, FILE *file_to_write, con
 	
 	for (int i = 0; i < input->width; i++)
 	{
-		fwrite(input->imageData[i], sizeof(unsigned char), input->height * sizeof(unsigned char), binary_file);
+		fwrite(input->imageData[i], sizeof(unsigned char), 
+		input->height * sizeof(unsigned char), binary_file);
 	}
 	fclose(binary_file);	
 }
@@ -60,15 +61,15 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 		return;
 	}
 	
-	printf("Writing contents to a");
+	//printf("Writing contents to a");
 	switch (input.magicNumber[1])
 	{
 	case '2':
-		printf("n ASCII pgm (%s)\n", filename);
+	//	printf("n ASCII pgm (%s)\n", filename);
 		writeContentsASCII(return_value, input, file_to_write);
 		break;
 	case '5':
-		printf(" binary pgm (%s)\n", filename);
+	//	printf(" binary pgm (%s)\n", filename);
 		writeContentsBinary(return_value, &input, file_to_write, filename);
 		break;
 	}
