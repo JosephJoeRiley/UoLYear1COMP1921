@@ -64,14 +64,14 @@ int reMallocData(PgmImage *this)
 		if(this->imageData[i] == NULL) 
 		{
 			free(this->imageData[i]);
-			return printOutMsg(FAILED_MALLOC, "./pgmAllocate", this->filename, "");
+			return FAILED_MALLOC;
 		}
 	}
 	if(this->imageData == NULL)
 	{
 		free(this->imageData);
-		return printOutMsg(FAILED_MALLOC, "./pgmAllocate", this->filename, "");
+		return FAILED_MALLOC;
 	}
 	else 
-		return printOutMsg(0, "./pgmAllocate", this->filename, "");
+		return 0;
 }

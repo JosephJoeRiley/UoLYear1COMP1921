@@ -113,16 +113,30 @@ void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 				if(*err_val == 4)
 					return;
 				else if (target->imageData[pixel_row][pixel_col] > target->maxGray || 
-				target->imageData[pixel_row][pixel_col] < 1 ||
-				feof(input));
-				{
+				target->imageData[pixel_row][pixel_col] < 1) {
+					printf("Bad pixel\n");
 					*err_val = BAD_DATA;
+					return;
+				}
+				else if(feof(input))  {
+					printf("Early EOF\n");
+					*err_val = BAD_DATA;
+					return;
+				}
+				else {
+					*err_val = 0;
 				}
 			}
 		}
 	}
-	if(!feof(input));
+	if(!feof(input)) {
+		*err_val = 0;
+	}
+	else 
+	{
+		printf("Late EOF\n");
 		*err_val = BAD_DATA;
+	}
 	fclose(input);
 }
 
@@ -241,7 +255,6 @@ PgmImage pgmRead(const char *filename, int *err_value)
 		return createDefaultPgmObject();
 	}
 
-	printOutMsg(*err_value, "./pgmRead", filename, "");
 	freeComments(output);
 	return output;
 }

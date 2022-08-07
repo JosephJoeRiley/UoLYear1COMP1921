@@ -5,13 +5,11 @@ int comparePgms(const char *aDir, const char* bDir, int *errorReturn)
 	PgmImage a = pgmRead(aDir, errorReturn);
 	if(*errorReturn)
 	{
-		printOutMsg(*errorReturn, "./pgmComp", aDir, "");
 		return 10;
 	}
 	PgmImage b = pgmRead(bDir, errorReturn);
 	if(*errorReturn)
 	{
-		printOutMsg(*errorReturn, "./pgmComp", bDir, "");
 		return 10;
 	}
 	
@@ -36,7 +34,7 @@ int main(int argc, char** argv)
 {
 	if(argc == 1)
             return printOutMsg(USAGE_ERROR, argv[0], "", "");
-    	else if(argc != 3)
+    else if(argc != 3)
             return printOutMsg(BAD_ARG_NO, argv[0], "", "");
 
 	int errorReturn = 0;

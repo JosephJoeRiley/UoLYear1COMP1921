@@ -1,5 +1,16 @@
 #include "pgmImage.h"
 
+
+int int_log(int x, int y)
+{
+
+}
+
+int int_log_inverse(int x, int y)
+{
+	return (int) (1.0 /int_log(x, y));
+}
+
 void writeContentsBinary(int *err_val, PgmImage *input, FILE *file_to_write, const char* write_filename)
 {
 	long dataStart = ftell(file_to_write);
@@ -17,26 +28,26 @@ void writeContentsBinary(int *err_val, PgmImage *input, FILE *file_to_write, con
 void writeContentsASCII(int *err_val, PgmImage input, FILE *file_to_write)
 {
 	//Loop through every pixel in the file: if we have a new line
-	//then print an additional new line	
+	//then print an additional new line
+	int charCount= 0;	
+	int pixelsWritten = 0;
 	for(int pixel_row = 0; pixel_row < input.width; ++pixel_row) {
 		for(int pixel_col = 0; pixel_col < input.height; ++pixel_col)
 		{
+			int digitCount = 0;
 			int grayVal = input.imageData[pixel_row][pixel_col];
-			char digit[3] = {'0', '0', '0'};
-			for(int i = 2; i >= 0 && *err_val == 0; i--)
-			{
-				if(i == 2 || (digit[i] - '0') > 0)
-				{
-					int printReturn = fprintf(file_to_write, "%c ", 
-					input.imageData[pixel_row][pixel_col]);
-					if(printReturn < 0)
-					{
-						*err_val = FAILED_OUTPUT;
-					}		
-				}
+		 	fprintf(file_to_write, "%d", grayVal);
+			++pixelsWritten;
+			while(grayVal /= 10)
+				digitCount++;
+			charCount += digitCount;
+			if(charCount > 0 && charCount % 70 == 0
+			|| pixelsWritten % (input.height / 42) == 0)
+				fprintf(file_to_write, "\n");
+			else {
+				fprintf(file_to_write, " ");
+				charCount += 1;
 			}
-			if(eri
-			
 		}
 	}
 
