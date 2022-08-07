@@ -103,17 +103,17 @@ const char *filename, const char *miscMessage)
 		printf("Usage: ");
 			if(!strcmp(callerID, "Echo"))
 				printf("./pgmEcho inputImage.pgm outputImage.pgm");
-			else if(!strcmp(callerID, "Comp"))
+			if(!strcmp(callerID, "Comp"))
 				printf("./pgmComp inputImage.pgm inputImage.pgm");
-			else if(!strcmp(callerID, "a2b"))
+			if(!strcmp(callerID, "a2b"))
 				printf("./pgma2b inputImage.pgm outputImage.pgm");
-			else if(!strcmp(callerID, "b2a"))
+			if(!strcmp(callerID, "b2a"))
 				printf("./pgmb2a inputImage.pgm outputImage.pgm");
-			else if(!strcmp(callerID, "Reduce"))
+			if(!strcmp(callerID, "Reduce"))
 				printf("./pgmReduce inputImage.pgm reduction_factor outputImage.pgm");
-			else if(!strcmp(callerID, "Tile"))
+			if(!strcmp(callerID, "Tile"))
 				printf("./pgmTile inputImage.pgm tiling_factor outputImage_<row>_<column>.pgm");
-			else if(!strcmp(callerID, "Assemble"))
+			if(!strcmp(callerID, "Assemble"))
 				printf("./pgmAssemble outputImage.pgm width height (row column inputImage.pgm)+");
 			errorCode = 0;
 		break;

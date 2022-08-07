@@ -57,7 +57,7 @@ pgmErrors.o: pgmErrors.c	pgmErrors.h
 	${CC}   -c ${CCFLAGS}	-o pgmErrors.o	pgmErrors.c
 
 pgmWrite.o:	pgmWrite.c	pgmImage.h pgmErrors.h 
-	${CC}	-c ${CCFLAGS}	-o pgmWrite.o	pgmWrite.c -lm
+	${CC}	-c ${CCFLAGS}	-o pgmWrite.o	pgmWrite.c 
 
 pgmRead.o:	pgmRead.c	pgmImage.h pgmErrors.h 
 	${CC}	-c ${CCFLAGS}	-o pgmRead.o	pgmRead.c 
