@@ -30,6 +30,8 @@ int main(int argc, char** argv)
     
     pgmWrite(output_filename, echoImage, &error_return);
     
+    //We print an error message and 
+    //exit if write wasn't successful
     if(error_return != 0)
     {
         return printOutMsg(error_return, argv[0], output_filename, "");

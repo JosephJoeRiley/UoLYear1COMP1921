@@ -25,6 +25,12 @@ PgmImage createDefaultPgmObject(void)
 	return a;
 }
 
+//When creating a copy 
+//we only copy the metadata for 
+//efficiency's sake:
+//Pgmtile, reduce etc, will all 
+//write their image data in by 
+//themselves
 PgmImage copyPgmMetadata(PgmImage b)
 {
 	PgmImage a;
@@ -39,6 +45,8 @@ PgmImage copyPgmMetadata(PgmImage b)
 	a.filename = b.filename;
 	return a;
 }
+
+//This is for debugging purposes
 void printInConsole(PgmImage ref) 
 {
 	printf("Data from pgm:\nMagicNumber: %s, Dimensions: %dx%d, MaxGray= %d\n\nImage data= \n%s\n", 
@@ -55,11 +63,22 @@ void printComments(PgmImage *this)
 	}
 }
 
+//Any time our width and/or height changes, we'll want to
+//malloc our image data again,
+//Now that we're using a double pointer, mallocing is a more 
+//complex process that calls for it's own method anyhow
 int reMallocData(PgmImage *this)
 {
+	//Allocate <width> amount of unsigned char arrays
 	this->imageData = (unsigned char**) malloc(this->width * sizeof(unsigned char *));
+	if(this->imageData == NULL)
+	{
+		free(this->imageData);
+		return FAILED_MALLOC;
+	}
 	for(int i = 0; i <= this->width; i++)
 	{
+		//Allocate <height> amount of chars in each said array
 		this->imageData[i] = (unsigned char *) malloc(this->height * sizeof(unsigned char));
 		if(this->imageData[i] == NULL) 
 		{
