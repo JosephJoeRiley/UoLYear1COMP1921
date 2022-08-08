@@ -28,35 +28,10 @@ void writeContentsASCII(int *err_val, PgmImage input, FILE *file_to_write)
 	//Loop through every pixel in the file: if we have a new line
 	//then print an additional new line
     *err_val = 0;
-	//This is the amount of characters we've written as a whole 
-	int charCount= 0;	
-	//This is the amount of integers/pixels that have been written in 
-	int pixelsWritten = 0;
-	for(int pixel_col = 0; pixel_col < input.height; ++pixel_col) {
-		for(int pixel_row = 0; pixel_row < input.width; ++pixel_row)
-		{
-			unsigned char grayValue = input.imageData[pixel_col][pixel_row];
-			if(grayValue > input.maxGray && grayValue < 0)
-			{
-				printf("Bad pixel\n");
-				*err_val = 8;
-				break;
-			}
-			fprintf(file_to_write, "%d", grayValue);
-			if(pixel_row == input.width)
-			{
-				if(pixel_col != input.height)
-				{
-					fprintf(file_to_write, "\n");
-				}
-			}
-			else
-			{
-				fprintf(file_to_write, " ");
-			}
-		}
-	}
 
+    //Write <height> amount of columns
+        //Write <width> amount of rows
+        
 	fclose(file_to_write);
 }
 /*	PGMWRITE OUTLINE
