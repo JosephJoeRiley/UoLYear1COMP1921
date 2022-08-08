@@ -101,14 +101,22 @@ void getBinaryContents(int *err_val, PgmImage *target_pgm, FILE *input_file)
 	//Reopen and get back to where we were (the image contents)
 	FILE *binary_file = fopen(target_pgm->filename, "rb");
 	fseek(binary_file, dataStart, SEEK_SET);
-	
+	long line_size = (target_pgm->height * sizeof(unsigned char));
 	//Read in the image data line by line, 
 	for (int i = 0; i < target_pgm->width; i++) 
 	{
-		fread(target_pgm->imageData[i], sizeof(unsigned char), 
-		(target_pgm->height * sizeof(unsigned char)), binary_file);
+		if(fread(target_pgm->imageData[i], sizeof(unsigned char), 
+		line_size, binary_file) != line_size) {
+			*err_val = BAD_DATA;
+			fclose(binary_file);
+			return;
+		}
 	}
 
+	unsigned char test_char = (unsigned char) '0';
+	if(fread(&test_char, sizeof(unsigned char), 
+	sizeof(unsigned char), binary_file) != 0) 
+		*err_val = BAD_DATA;
 	//Binary file won't exist for the main function
 	//since we had to reopen it, so we're closing here
 	fclose(binary_file);	
@@ -125,7 +133,7 @@ void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 
 			//First check if our data is valid and we've managed to scan exactly one integer in
 			if((scanCount = pgmScanWrapper(fscanf(input, " %u", 
-			(unsigned int *) &target->imageData[pixel_row][pixel_col]), input, target, err_val)) != 1)
+			(unsigned int *) &target->imageData[pixel_row][pixel_col]), input, target, err_val)) < 0)
 			{
 				//pgmScanWrapper will have written
 				//any comments for us.
@@ -155,14 +163,19 @@ void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 	
 	//Final check if this is actually the end 
 	//of the file
-	unsigned int endCheck;
+	unsigned int endCheck = -100;
 	
 	//If this scan comes back having read something
 	//then we aren't at the end of the data: so
 	// we return BAD_DATA for too much data
-	if(fscanf(input, " %u", &endCheck) != 0)
-		*err_val = 8;
+	fscanf(input, " %u", &endCheck);
 	
+	if(endCheck > -1)
+	{
+		*err_val = BAD_DATA;
+		return;
+	}
+
 	//This is to keep parity with our binary reading
 	//function, to avoid closing the image twice and 
 	//causing a double free
