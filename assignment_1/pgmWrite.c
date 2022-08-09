@@ -4,24 +4,19 @@
 void writeContentsBinary(int *err_val, PgmImage *input, FILE *file_to_write, const char* write_filename)
 {
 	//Where does the image data start?
-	long dataStart = ftell(file_to_write);
 	//Reopen so that we can write binary
-	fclose(file_to_write);
-	FILE *binary_file = fopen(write_filename, "ab");
 	//Go to the start of the image data
-	fseek(binary_file, dataStart, SEEK_SET);
 	//We want to write <width> chars per line of data
 	long line_size = input->width * sizeof(unsigned char);
 	//We want to write <height> amount of <width> length char arrays
 	for (int i = 0; i < input->height; i++)
 	{
 		if(fwrite(input->imageData[i], sizeof(unsigned char), 
-		line_size, binary_file) != line_size) {
+		line_size, file_to_write) != line_size) {
 			*err_val = FAILED_OUTPUT;
 			return;
 		}
 	}
-	fclose(binary_file);	
 }
 void writeContentsASCII(int *err_val, PgmImage input, FILE *file_to_write)
 {
@@ -31,8 +26,23 @@ void writeContentsASCII(int *err_val, PgmImage input, FILE *file_to_write)
 
     //Write <height> amount of columns
         //Write <width> amount of rows
-        
-	fclose(file_to_write);
+    
+	for(int pixel_row = 0; pixel_row < input.height; ++pixel_row)
+		for(int pixel_col = 0; pixel_col < input.width; ++pixel_col)
+		{
+			int printReturn;
+			if(pixel_col == 0)
+				printReturn = fprintf(file_to_write, "%d ", input.imageData[pixel_col][pixel_row]);
+			else
+				printReturn = fprintf(file_to_write, "%2d%c", 
+				input.imageData[pixel_col][pixel_row],  
+				(pixel_col == (input.width - 1)? (pixel_row == (input.height - 1))? EOF: '\n' : ' '));
+			if(printReturn < 0)
+			{
+				*err_val = FAILED_OUTPUT;
+				return;
+			}
+		}
 }
 /*	PGMWRITE OUTLINE
 Check pgmObject_a's contents are valid
@@ -64,6 +74,7 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 		return;
 	}
 	
+	
 	//printf("Writing contents to a");
 	switch (input.magicNumber[1])
 	{
@@ -76,7 +87,8 @@ void pgmWrite(char *filename, PgmImage input, int *return_value)
 		writeContentsBinary(return_value, &input, file_to_write, filename);
 		break;
 	}
-	
+
+	fclose(file_to_write);	
 	//printOutMsg(*return_value,"./pgmWrite", filename, "");
 	return;
 
