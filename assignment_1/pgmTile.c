@@ -4,7 +4,7 @@
 const char *createFileName(const char *spec, unsigned int x, unsigned int y, char mID)
 {
 	
-	char *title = (char *) malloc(256 * sizeof(char));
+	char *title = (char *) malloc(strlen(spec) * sizeof(char));
 	/*
 	char currentChar;
 	int charIndexOutput, charIndexInput = charIndexOutput = 0;
@@ -18,7 +18,6 @@ const char *createFileName(const char *spec, unsigned int x, unsigned int y, cha
 	    title[charIndexOutput++] = currentChar;
 	} while (currentChar != 'm');
 	*/ 
-	snprintf(title, 256, "../images/output/assignment_1/tile_%d_%d.ascii.pgm", x, y);
     return (const char *) title;
 } 
 

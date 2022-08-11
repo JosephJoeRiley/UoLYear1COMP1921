@@ -7,11 +7,18 @@
     */
 int main(int argc, char** argv)
 {
-    int return_value = -1;
-    if(argc != 3)
-    {
-        printOutMsg(USAGE_ERROR, argv[0], "", "");
-    }
-    convertA2B(argv[2], pgmRead(argv[1], &return_value), &return_value);
-    return printOutMsg(return_value, argv[0], "", "");
+ 	if(argc == 1)
+            return printOutMsg(USAGE_ERROR, argv[0], "", "");
+    else if(argc != 3)
+            return printOutMsg(BAD_ARG_NO, argv[0], "", "");
+
+	int errorReturn = 0;
+    PgmImage a = pgmRead(argv[1], &errorReturn);
+    if(errorReturn != CONVERTED)
+        return printOutMsg(errorReturn, argv[0], argv[1], "");
+    
+    if((convertB2A(argv[2], a, &errorReturn)).magicNumber[1] != '5')
+        return printOutMsg(errorReturn, argv[0], argv[2], "");
+    else 
+        return printOutMsg(CONVERTED, argv[0], "", "");
 }

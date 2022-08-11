@@ -2,13 +2,22 @@
 
 PgmImage pgmReduce(const char *read_filename, unsigned int factor, int *return_value)
 {
-	const char *temp_filename = read_filename;
+	
 	PgmImage input = pgmRead(read_filename, return_value);
+	
+	if(*return_value != 0)
+		return createDefaultPgmObject();
+	
 	PgmImage output = copyPgmMetadata(input);
+	
 	output.width /= factor;
 	output.height /= factor;
+	
 	int ratio_x, ratio_y;
+	
 	ratio_x = ratio_y = 0;
+	
+	//These are here 
 	if(input.width > input.height)
 	{
 		ratio_x  = ceil((double) input.width / input.height);
@@ -17,6 +26,7 @@ PgmImage pgmReduce(const char *read_filename, unsigned int factor, int *return_v
 	{
 		ratio_y = ceil((double) input.height / input.width);
 	}
+
 	//Return if this malloc fails
 	if(reMallocData(&output) != 0)
 	{
@@ -25,9 +35,10 @@ PgmImage pgmReduce(const char *read_filename, unsigned int factor, int *return_v
 	}
 
  	//Set each char of our output images's data         
-	for(int output_row = 0; output_row < (output.width); output_row++)
-		for(int output_col = 0; output_col < output.height; output_col++) 
-			output.imageData[output_row][output_col] = input.imageData[output_row * factor][output_col * factor];
+	for(int output_row = 0; output_row < (output.height); output_row++)
+		for(int output_col = 0; output_col < output.width; output_col++) 
+		//This is here so that we write every <factor>th pixel of the input image to the resulting image
+			output.imageData[output_col][output_row] = input.imageData[output_col * factor][output_row * factor];
 	
 	//return our pgm 
 	return output;
@@ -61,6 +72,6 @@ int main(int argc, char** argv)
 	if(return_val == 0)
 		pgmWrite(argv[3], result, &dummy_val);
 	
-	printOutMsg(return_val, argv[0], argv[1], argv[3]);
+	
 	return printOutMsg(return_val, argv[0], "", ""); 
 } 

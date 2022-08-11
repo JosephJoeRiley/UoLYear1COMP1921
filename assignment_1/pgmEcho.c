@@ -37,5 +37,5 @@ int main(int argc, char** argv)
         return printOutMsg(error_return, argv[0], output_filename, "");
     }
 
-    return printOutMsg(error_return, argv[0], "", "");
+    return printOutMsg(ECHOED, argv[0], "", "");
 }

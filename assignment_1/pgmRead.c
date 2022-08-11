@@ -115,8 +115,9 @@ void getBinaryContents(int *err_val, PgmImage *target_pgm, FILE *input_file)
 
 	unsigned char test_char = (unsigned char) '0';
 	if(fread(&test_char, sizeof(unsigned char), 
-	sizeof(unsigned char), binary_file) != 0) 
+	sizeof(unsigned char), binary_file) > 0) 
 		*err_val = BAD_DATA;
+
 	//Binary file won't exist for the main function
 	//since we had to reopen it, so we're closing here
 	fclose(binary_file);	
@@ -161,21 +162,7 @@ void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 		}
 	}
 	
-	//Final check if this is actually the end 
-	//of the file
-	unsigned int endCheck = -100;
 	
-	//If this scan comes back having read something
-	//then we aren't at the end of the data: so
-	// we return BAD_DATA for too much data
-	fscanf(input, " %u", &endCheck);
-	
-	if(endCheck > -1)
-	{
-		*err_val = BAD_DATA;
-		return;
-	}
-
 	//This is to keep parity with our binary reading
 	//function, to avoid closing the image twice and 
 	//causing a double free

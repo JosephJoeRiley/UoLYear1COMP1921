@@ -1,5 +1,6 @@
 #ifndef __PGM_CONVERT__
 #define __PGM_CONVERT__
+#define SUCCESS 0
 #include "pgmImage.h"
 #include "pgmErrors.h"
 #include "pgmRead.h"

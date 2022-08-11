@@ -20,8 +20,8 @@ const char *filename, const char *miscMessage)
 	switch(errorCode)
 	{
 		case -1:
-		if(!strcmp(callerID, "Compare"))
-			printf("IDENTICAL");
+		if(!strcmp(callerID, "Comp"))
+			printf("DIFFERENT");
 			errorCode = 0;
 		break;
 		case 0:	
@@ -32,7 +32,7 @@ const char *filename, const char *miscMessage)
 			if(!strcmp(callerID, "Echo"))
 				printf("ECHOED");	
 			if(!strcmp(callerID, "Comp"))
-				printf("DIFFERENT");
+				printf("IDENTICAL");
 			if(!strcmp(callerID,"a2b") || 
 			!strcmp(callerID,"b2a")) 
 				printf("CONVERTED");

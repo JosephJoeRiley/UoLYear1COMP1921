@@ -1,5 +1,7 @@
 #ifndef __PGM_COMP__
 #define __PGM_COMP__
+#define DIFFERENT 0
+#define IDENTICAL 1
 #include <stdlib.h>
 #include "pgmImage.h"
 #include "pgmRead.h"
