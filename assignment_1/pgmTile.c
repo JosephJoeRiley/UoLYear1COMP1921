@@ -1,23 +1,43 @@
 #include "pgmTile.h"
 
+char *int_to_char(unsigned int input)
+{
+	unsigned int numlen = 0;
+	unsigned int copy = input;
+	while(copy /= 10)
+		++numlen;
+	char output[numlen];
+	copy = input;
+	for(int index = 0; index < numlen; index++)
+	{
+		output[index] = ();
+	}
 
-const char *createFileName(const char *spec, unsigned int x, unsigned int y, char mID)
+}
+const char *createFileName(const char *spec, unsigned int x, unsigned int y)
 {
 	
-	char *title = (char *) malloc(strlen(spec) * sizeof(char));
-	/*
-	char currentChar;
-	int charIndexOutput, charIndexInput = charIndexOutput = 0;
-	title = (char *) malloc(strlen(spec) * sizeof(char));
-	do
+	c0har *title = (char *) malloc(strlen(spec) * sizeof(char));
+	for(int index = 0, digit_index = 0; index < strlen(title); index++)
 	{
-		if((currentChar = ));
-		{
-
+		char c = spec[index];
+		if(c == '<')
+		{	
+			char *number_string;
+			if((c = spec[++index]) == 'r')
+				number_string = int_to_char(x);
+			else if(c == 'c')
+				number_string = int_to_char(y);
+			--index;
+			while(spec[index] != '>' && digit_index < strlen(number_string))
+				title[index + digit_index] = number_string[digit_index++];					
+			if(c == 'c')
+				break;
 		}
-	    title[charIndexOutput++] = currentChar;
-	} while (currentChar != 'm');
-	*/ 
+		if( == 'c')
+			break;
+		title[index + digit_index] = c;	
+	}	
     return (const char *) title;
 } 
 
@@ -34,12 +54,14 @@ void writeTile(PgmImage source, const char *origin_file_name, const char *target
     for(int i = 0; i < factor_squared; ++i)
     {
 		tiles[i] = copyPgmMetadata(source); 
-		tiles[i].filename = createFileName(target_file_name, i / factor, i % factor, source.magicNumber[1]);		
+		tiles[i].filename = createFileName(target_file_name, 
+		i / factor, i % factor, source.magicNumber[1]);		
 		tiles[i].width = (source.width / factor);
-        tiles[i].height = (source.height / factor);
+        	tiles[i].height = (source.height / factor);
 		if((*return_value = reMallocData(&tiles[i])) != 0) 
 		{
-			printOutMsg(FAILED_MALLOC, "./pgmTile", tiles[i].filename, "");
+			printOutMsg(FAILED_MALLOC, "./pgmTile", i
+			tiles[i].filename, "");
 		}
 		if(i / factor == (factor - 1))
 			tiles[i].width += (source.width % factor);
@@ -48,13 +70,21 @@ void writeTile(PgmImage source, const char *origin_file_name, const char *target
 	}
 
 	int tileCounter = 0;
-	for (int currOriginRowStart = 0; currOriginRowStart < source.width; currOriginRowStart += (source.width / factor))
+	for (int currOriginRowStart = 0; 
+	currOriginRowStart < source.width; 
+	currOriginRowStart += (source.width / factor))
 	{
-		for (int currOriginColStart = 0; currOriginColStart < source.height; currOriginColStart += (source.height / factor))
+		for (int currOriginColStart = 0; 
+		currOriginColStart < source.height; 
+		currOriginColStart += (source.height / factor))
 		{
 			
-			for(int currOriginRow = currOriginRowStart; currOriginRow < (currOriginRowStart + tiles[tileCounter].width ); currOriginRow++)
-				for(int currOriginCol = currOriginColStart; currOriginCol < (currOriginColStart + tiles[tileCounter].height); currOriginCol++) 
+			for(int currOriginRow = currOriginRowStart; 
+			currOriginRow < (currOriginRowStart + 
+			tiles[tileCounter].width ); currOriginRow++)
+				for(int currOriginCol = currOriginColStart; 
+				currOriginCol < (currOriginColStart + 
+				tiles[tileCounter].height); currOriginCol++) 
 				{
 					tiles[tileCounter].imageData[currOriginRow - currOriginRowStart][currOriginCol - currOriginColStart] = source.imageData[currOriginRow][currOriginCol];
 				}
@@ -106,6 +136,7 @@ int main(int argc, char ** argv)
 		numlen--;
 	}
 
-    writeTile(pgmRead(argv[1], &return_val), argv[1], argv[3],   my_factor, &return_val);
+    writeTile(pgmRead(argv[1], &return_val), 
+	argv[1], argv[3],   my_factor, &return_val);
 	return printOutMsg(return_val , argv[0], argv[3], "");
 }
