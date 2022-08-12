@@ -14,9 +14,9 @@ const char *filename, const char *miscMessage)
 	//We need the entire title, not only for 
 	//readablility, since the names of 
 	//the modules may share inital letters
-	for(int i = 5; i < strlen(programName); ++i)
+	for(int i = 5; i <= strlen(programName); ++i)
 		callerID[i - 5] = programName[i];
-
+		
 	switch(errorCode)
 	{
 		case -1:

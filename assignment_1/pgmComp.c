@@ -55,7 +55,7 @@ int comparePgms(const char *aDir, const char* bDir, int *errorReturn)
 }
 
 int main(int argc, char** argv)
-{
+{	
 	if(argc == 1)
             return printOutMsg(USAGE_ERROR, argv[0], "", "");
     else if(argc != 3)
