@@ -2,42 +2,69 @@
 
 char *int_to_char(unsigned int input)
 {
-	unsigned int numlen = 0;
-	unsigned int copy = input;
-	while(copy /= 10)
-		++numlen;
-	char output[numlen];
-	copy = input;
-	for(int index = 0; index < numlen; index++)
+	unsigned int order = 10000, char_array_len = 0;
+	while(input % order != 0) 
 	{
-		output[index] = ();
+		order /= 10;
+		++char_array_len;
 	}
-
-}
+	char char_array[char_array_len];
+	//i: the index of the character array
+	//
+	//j: the reference to the inputted integer 
+	//from which we get our digit (to place in  
+	//the ith place of the char array)
+	//
+	//k: the offset for the digit to make it 
+	//a single digit that can be turned into a char
+	for(int i = 0, j = input, k = order
+	i < char_array_len, j > 0, k <= 1;
+	i++, j %= k, k /= 10)
+	{
+		char_array[i] = (char) (j / k) + '0';		
+	}
+	return char_array;	
+}	
 const char *createFileName(const char *spec, unsigned int x, unsigned int y)
 {
-	
-	c0har *title = (char *) malloc(strlen(spec) * sizeof(char));
-	for(int index = 0, digit_index = 0; index < strlen(title); index++)
+	//Since spec is already a const char, we know its size is a 
+	//valid size for this character array so this malloc will never fail
+	char *title = (char *) malloc(strlen(spec) * sizeof(char));
+	//Create a for loop with two variables:
+	//index is not the index of title but the index of spec
+	//the loop condition doesn't really matter since we will always
+	//stop reading from spec when we return a 'c', the first character of 'column'
+	//We don't want spec's index to be inside the loop since we'll want to 
+	//access it later 
+	int index = 0;
+	for(digit_index = 0; ; index++)
 	{
 		char c = spec[index];
 		if(c == '<')
 		{	
+			//Set a char array which contains either x or y,
+			//depending if the char that succeeds '<' is a 
+			//'r' for 'row' or a 'c' for 'column'
 			char *number_string;
 			if((c = spec[++index]) == 'r')
 				number_string = int_to_char(x);
 			else if(c == 'c')
 				number_string = int_to_char(y);
+			//Go back to where the angle bracket was
 			--index;
-			while(spec[index] != '>' && digit_index < strlen(number_string))
-				title[index + digit_index] = number_string[digit_index++];					
-			if(c == 'c')
-				break;
+			//Until we reach the other angle bracket, insert the digit string
+			//into title without incrementing index 
+			while(spec[index + digit_index] != '>' && digit_index < strlen(number_string))
+			title[index + digit_index] = number_string[digit_index++];					
+		
+			(c = spec[++index]);
 		}
-		if( == 'c')
+		else if(c  == 'c')
 			break;
-		title[index + digit_index] = c;	
-	}	
+		else
+			title[index + digit_index] = c;	
+	}
+		
     return (const char *) title;
 } 
 
