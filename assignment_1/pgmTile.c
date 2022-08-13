@@ -1,9 +1,21 @@
 #include "pgmTile.h"
 
+//Returns a variable char array that is the argument
+//input (an integer) written in human-readable ASCII
 char *int_to_char(unsigned int input)
 {
-	unsigned int order = 10000, char_array_len = 0;
-	while(input % order != 0) 
+    //Order is set to the max power of ten that
+    //width or height could possibly divide into
+    //i.e, it's to count how many digits we have
+	unsigned int order = 10000;
+    //The variable that stores how long the character
+    //array will be
+    unsigned int char_array_len;
+	//Check how long our number will be
+    //As long as our input doesn't go into input,
+    //our order has too many digits
+    char_array_len = 1;
+    while(input % order != input)
 	{
 		order /= 10;
 		++char_array_len;
@@ -17,14 +29,17 @@ char *int_to_char(unsigned int input)
 	//
 	//k: the offset for the digit to make it 
 	//a single digit that can be turned into a char
-	for(int i = 0, j = input, k = order
+	for(int i = 0, j = input, k = order;
 	i < char_array_len, j > 0, k <= 1;
 	i++, j %= k, k /= 10)
 	{
 		char_array[i] = (char) (j / k) + '0';		
 	}
 	return char_array;	
-}	
+}
+
+//Returns a string where the words 'row' and 'column' between angle brackets '<>'
+//are replaced with the numbers x and y respectively
 const char *createFileName(const char *spec, unsigned int x, unsigned int y)
 {
 	//Since spec is already a const char, we know its size is a 
@@ -32,12 +47,11 @@ const char *createFileName(const char *spec, unsigned int x, unsigned int y)
 	char *title = (char *) malloc(strlen(spec) * sizeof(char));
 	//Create a for loop with two variables:
 	//index is not the index of title but the index of spec
-	//the loop condition doesn't really matter since we will always
-	//stop reading from spec when we return a 'c', the first character of 'column'
-	//We don't want spec's index to be inside the loop since we'll want to 
-	//access it later 
-	int index = 0;
-	for(digit_index = 0; ; index++)
+
+    //Digit index doesn't increment except/until we reach
+    //an angle bracket at which point, it increments as many
+    //as the amount of digits in either x or y
+	for(int index = 0, digit_index = 0; index < strlen(spec); index++)
 	{
 		char c = spec[index];
 		if(c == '<')
@@ -46,28 +60,26 @@ const char *createFileName(const char *spec, unsigned int x, unsigned int y)
 			//depending if the char that succeeds '<' is a 
 			//'r' for 'row' or a 'c' for 'column'
 			char *number_string;
-			if((c = spec[++index]) == 'r')
+            //r for 'row'
+			if((c = spec[++index]) == 'r' || c == 'R')
 				number_string = int_to_char(x);
-			else if(c == 'c')
+			//c for 'column'
+            else if(c == 'c' || c == 'C')
 				number_string = int_to_char(y);
 			//Go back to where the angle bracket was
 			--index;
 			//Until we reach the other angle bracket, insert the digit string
 			//into title without incrementing index 
-			while(spec[index + digit_index] != '>' && digit_index < strlen(number_string))
-			title[index + digit_index] = number_string[digit_index++];					
-		
-			(c = spec[++index]);
+			while(spec[index] != '>' && digit_index < strlen(number_string))
+			title[index++] = number_string[digit_index++];
 		}
-		else if(c  == 'c')
-			break;
 		else
 			title[index + digit_index] = c;	
 	}
-		
-    return (const char *) title;
+    return title;
 } 
 
+//Writes the pgm_image object source into factor * factor amount of smaller images
 void writeTile(PgmImage source, const char *origin_file_name, const char *target_file_name, unsigned int factor, int *return_value)
 {
     unsigned int factor_squared = factor * factor;
@@ -78,17 +90,21 @@ void writeTile(PgmImage source, const char *origin_file_name, const char *target
 	origin_x = 0;
 	origin_y = 0;
 
+    //Create all the pgm objects in an array called tiles
     for(int i = 0; i < factor_squared; ++i)
     {
-		tiles[i] = copyPgmMetadata(source); 
+        //Magic number and max gray will be the same, so we copy all the metadata of origin
+		tiles[i] = copyPgmMetadata(source);
+        //We want to be careful with the filename in case we have a multiple digit factor
 		tiles[i].filename = createFileName(target_file_name, 
-		i / factor, i % factor, source.magicNumber[1]);		
+		i / factor, i % factor);
+
 		tiles[i].width = (source.width / factor);
-        	tiles[i].height = (source.height / factor);
-		if((*return_value = reMallocData(&tiles[i])) != 0) 
+        tiles[i].height = (source.height / factor);
+		//
+        if((*return_value = reMallocData(&tiles[i])) != 0)
 		{
-			printOutMsg(FAILED_MALLOC, "./pgmTile", i
-			tiles[i].filename, "");
+			printOutMsg(FAILED_MALLOC, "./pgmTile", tiles[i].filename, "");
 		}
 		if(i / factor == (factor - 1))
 			tiles[i].width += (source.width % factor);
@@ -113,7 +129,8 @@ void writeTile(PgmImage source, const char *origin_file_name, const char *target
 				currOriginCol < (currOriginColStart + 
 				tiles[tileCounter].height); currOriginCol++) 
 				{
-					tiles[tileCounter].imageData[currOriginRow - currOriginRowStart][currOriginCol - currOriginColStart] = source.imageData[currOriginRow][currOriginCol];
+					tiles[tileCounter].imageData[currOriginRow - currOriginRowStart][currOriginCol - currOriginColStart]
+                    = source.imageData[currOriginRow][currOriginCol];
 				}
 				
 			++tileCounter;

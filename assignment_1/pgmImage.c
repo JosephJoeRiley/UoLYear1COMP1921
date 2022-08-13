@@ -70,16 +70,16 @@ void printComments(PgmImage *this)
 int reMallocData(PgmImage *this)
 {
 	//Allocate <width> amount of unsigned char arrays
-	this->imageData = (unsigned char**) malloc(this->width * sizeof(unsigned char *));
+	this->imageData = (unsigned char**) malloc(this->height * sizeof(unsigned char *));
 	if(this->imageData == NULL)
 	{
 		free(this->imageData);
 		return FAILED_MALLOC;
 	}
-	for(int i = 0; i <= this->width; i++)
+    //Allocate <height> amount of  <width> length char arrays
+	for(int i = 0; i <= this->height; i++)
 	{
-		//Allocate <height> amount of chars in each said array
-		this->imageData[i] = (unsigned char *) malloc(this->height * sizeof(unsigned char));
+		this->imageData[i] = (unsigned char *) malloc(this->width * sizeof(unsigned char));
 		if(this->imageData[i] == NULL) 
 		{
 			free(this->imageData[i]);

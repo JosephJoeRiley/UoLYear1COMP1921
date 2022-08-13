@@ -94,47 +94,38 @@ int pgmScanWrapper(int input, FILE *file, PgmImage *image, int *err)
 //Writes in the image data of a binary file to target_pgm 
 void getBinaryContents(int *err_val, PgmImage *target_pgm, FILE *input_file)
 {
-	//We're using the pointer of the file so we can read from that point onward
-	long dataStart = ftell(input_file);
-	//We're done with the argument file since it was in ASCII format for the metadata
-	fclose(input_file);
-	//Reopen and get back to where we were (the image contents)
-	FILE *binary_file = fopen(target_pgm->filename, "rb");
-	fseek(binary_file, dataStart, SEEK_SET);
 	long line_size = (target_pgm->height * sizeof(unsigned char));
 	//Read in the image data line by line, 
 	for (int i = 0; i < target_pgm->width; i++) 
 	{
 		if(fread(target_pgm->imageData[i], sizeof(unsigned char), 
-		line_size, binary_file) != line_size) {
+		line_size, input_file) != line_size) {
 			*err_val = BAD_DATA;
-			fclose(binary_file);
+			fclose(input_file);
 			return;
 		}
 	}
 
 	unsigned char test_char = (unsigned char) '0';
 	if(fread(&test_char, sizeof(unsigned char), 
-	sizeof(unsigned char), binary_file) > 0) 
+	sizeof(unsigned char), input_file) > 0)
 		*err_val = BAD_DATA;
 
-	//Binary file won't exist for the main function
-	//since we had to reopen it, so we're closing here
-	fclose(binary_file);	
 }
 
 //Writes in the contents of an ASCII file to target(a PGM object)
 void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 {
-	for(int pixel_row = 0; pixel_row < target->width; ++pixel_row)
+	for(int pixel_row = 0; pixel_row < target->height; ++pixel_row)
 	{
-		for(int pixel_col = 0; pixel_col < target->height; ++pixel_col)
+		for(int pixel_col = 0; pixel_col < target->width; ++pixel_col)
 		{
-			int scanCount = 0;
-
+			int scanCount = pgmScanWrapper(fscanf(input, " %u",
+                                                  (unsigned int *) &target->imageData[pixel_row][pixel_col]),
+                                           input, target, err_val);
+            printf("Scan results: %d, %d\n", target->imageData[pixel_row][pixel_col], *err_val);
 			//First check if our data is valid and we've managed to scan exactly one integer in
-			if((scanCount = pgmScanWrapper(fscanf(input, " %u", 
-			(unsigned int *) &target->imageData[pixel_row][pixel_col]), input, target, err_val)) < 0)
+			if(scanCount < 0)
 			{
 				//pgmScanWrapper will have written
 				//any comments for us.
@@ -142,9 +133,9 @@ void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 				//are too long, we return bad comment
 				if(*err_val == BAD_COMMENT)
 					return;
-				//Check if our pixel is is valid
-				else if (target->imageData[pixel_row][pixel_col] > target->maxGray || 
-				target->imageData[pixel_row][pixel_col] < 0) 
+				//Check if our pixel is valid
+				else if (target->imageData[pixel_col][pixel_row] > target->maxGray ||
+				target->imageData[pixel_col][pixel_row] < 0)
 				{
 					//A pixel is out of the acceptable range
 					*err_val = BAD_DATA;
@@ -161,12 +152,7 @@ void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 			}
 		}
 	}
-	
-	
-	//This is to keep parity with our binary reading
-	//function, to avoid closing the image twice and 
-	//causing a double free
-	fclose(input);
+
 }
 
 //Returns a pgmImage object that is equivalent
@@ -297,6 +283,7 @@ PgmImage pgmRead(const char *filename, int *err_value)
 		return createDefaultPgmObject();
 	}
 
+    fclose(file_to_read);
 	//Return success since we would have
 	//returned if there were any problems (hopefullly)
 	if(output.comments)

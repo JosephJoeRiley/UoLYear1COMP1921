@@ -28,7 +28,8 @@ Contained executables
 		only the nth pixels are shown 
 	pgmTile
 		Reads in a pgm and writes n*n images that are tiles of the 
-		input image. The image data is altered so that ...
+		input image. The image data is altered so that only every nth
+		pixel is printed to the output image
 	pgmAssemble
 		Reads in several pgm files and returns one image ...
 Contained libraries

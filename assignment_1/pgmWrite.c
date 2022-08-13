@@ -43,7 +43,7 @@ void writeContentsASCII(int *err_val, PgmImage input, FILE *file_to_write)
 				((pixel_row == (input.width - 1))? (pixel_col == (input.height - 1))? "": "\n" : "  "));\
 			}
 			charCount += 4;
-			if((charCount / 2) > (input.width % 70))
+			if(input.width > 70 && (charCount / 2) > (input.width % 70))
 			{
 				charCount = 0;
 				fprintf(file_to_write, "\n");
