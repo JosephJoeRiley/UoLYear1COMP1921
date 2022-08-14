@@ -12,9 +12,9 @@ int main(int argc, char** argv)
     else if(argc != 3)
             return printOutMsg(BAD_ARG_NO, argv[0], "", "");
 
-	int errorReturn = 0;
+    int errorReturn = 0;
     PgmImage a = pgmRead(argv[1], &errorReturn);
-    if(errorReturn != CONVERTED)
+    if(errorReturn != 0)
         return printOutMsg(errorReturn, argv[0], argv[1], "");
     
     if((convertB2A(argv[2], a, &errorReturn)).magicNumber[1] != '5')

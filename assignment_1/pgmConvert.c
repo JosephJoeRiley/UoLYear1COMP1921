@@ -11,7 +11,7 @@ PgmImage convertA2B(const char *outDir, PgmImage a, int *errorReturn)
     a.magicNumber[1] = '5';
     pgmWrite(outDir, a, errorReturn);
     if(*errorReturn != SUCCESS)
-        printOutMsg(*errorReturn, "./pgma2b", a.filename, "");    
+    	return createDefaultPgmObject();
     return pgmRead(outDir, errorReturn); 
 }
 
@@ -21,6 +21,6 @@ PgmImage convertB2A(const char *outDir, PgmImage a, int *errorReturn)
     a.magicNumber[1] = '2';
     pgmWrite(outDir, a, errorReturn);
     if(*errorReturn != SUCCESS)
-        printOutMsg(*errorReturn, "./pgma2b", a.filename, "");    
+    	return createDefaultPgmObject();
     return pgmRead(outDir, errorReturn); 
 }

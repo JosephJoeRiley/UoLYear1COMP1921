@@ -14,10 +14,10 @@ int main(int argc, char** argv)
 
 	int errorReturn = 0;
     PgmImage a = pgmRead(argv[1], &errorReturn);
-    if(errorReturn != CONVERTED)
+    if(errorReturn != 0)
         return printOutMsg(errorReturn, argv[0], argv[1], "");
     
-    if((convertB2A(argv[2], a, &errorReturn)).magicNumber[1] != '5')
+    if((convertB2A(argv[2], a, &errorReturn)).magicNumber[1] != '2')
         return printOutMsg(errorReturn, argv[0], argv[2], "");
     else 
         return printOutMsg(CONVERTED, argv[0], "", "");

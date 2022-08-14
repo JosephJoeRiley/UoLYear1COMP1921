@@ -2,8 +2,8 @@
 CC=gcc
 CCFLAGS=-g -std=c99 #-fmax-errors=1 -Wall -Werror
 MODULES=pgmImage.o pgmErrors.o pgmRead.o pgmWrite.o pgmConvert.o 
-MAINS=pgmEcho  pgmComp # pgma2b pgmb2a pgmReduce pgmTile
-TARGETS=pgmEcho  pgmComp #  pgma2b pgmb2a pgmReduce pgmTile
+MAINS=pgmEcho  pgmComp  pgma2b pgmb2a pgmReduce # pgmTile
+TARGETS=pgmEcho  pgmComp pgma2b pgmb2a  pgmReduce # pgmTile
 
 all:	${TARGETS} 
 

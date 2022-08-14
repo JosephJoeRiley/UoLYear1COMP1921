@@ -4,9 +4,12 @@ PgmImage pgmReduce(const char *read_filename, unsigned int factor, int *return_v
 {
 	
 	PgmImage input = pgmRead(read_filename, return_value);
-	
 	if(*return_value != 0)
 		return createDefaultPgmObject();
+	else if(factor > input.width || factor > input.height)
+	{
+		*return_value = 100;
+	}
 	
 	PgmImage output = copyPgmMetadata(input);
 	
@@ -47,7 +50,7 @@ int main(int argc, char** argv)
 {
 	int dummy_val, return_val = dummy_val = -1;
     
-	if(argc == 0) 
+	if(argc == 1) 
 		return printOutMsg(USAGE_ERROR, argv[0], "", "");
 	else if (argc != 4)
 		return printOutMsg(BAD_ARG_NO, argv[0], "", "");
@@ -66,11 +69,13 @@ int main(int argc, char** argv)
 		my_factor += digit;
 		numlen--;
 	}	
-
+	if(my_factor < 0)
+		return printOutMsg(MISC_ERROR, argv[0], "", "Reduction factor is too small");
 	PgmImage result = pgmReduce(argv[1], my_factor, &return_val);
 	if(return_val == 0)
 		pgmWrite(argv[3], result, &dummy_val);
-	
-	
-	return printOutMsg(return_val, argv[0], "", ""); 
+	else if(return_val == MISC_ERROR)
+		return printOutMsg(MISC_ERROR, argv[0], "", "Reduction factor is too large");
+	else
+		return printOutMsg(return_val, argv[0], "", ""); 
 } 
