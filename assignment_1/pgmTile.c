@@ -31,7 +31,7 @@ const char *int_to_char(unsigned int input)
 	//k: the offset for the digit to make it 
 	//a single digit that can be turned into a char
 	for(int i = 0, j = input, k = order;
-	i < char_array_len, j > 0, k <= 1;
+	i < char_array_len && j > 0 && k <= 1;
 	i++, j %= k, k /= 10)
 	{
 		char_array[i] = (char) (j / k) + '0';		
@@ -62,11 +62,11 @@ const char *createFileName(const char *spec, unsigned int x, unsigned int y)
 			//depending if the char that succeeds '<' is a 
 			//'r' for 'row' or a 'c' for 'column'
 			const char *number_string;
-            //r for 'row'
+            		//r for 'row'
 			if((c = spec[++index]) == 'r' || c == 'R')
 				number_string = int_to_char(x);
 			//c for 'column'
-            else if(c == 'c' || c == 'C')
+            		else if(c == 'c' || c == 'C')
 				number_string = int_to_char(y);
 			//Go back to where the angle bracket was
 			--index;
@@ -86,11 +86,7 @@ void writeTile(PgmImage source, const char *origin_file_name, const char *target
 {
     unsigned int factor_squared = factor * factor;
     PgmImage tiles[factor_squared];
-	unsigned int source_size = source.width * source.height;
 	
-	int origin_x, origin_y;
-	origin_x = 0;
-	origin_y = 0;
 
     //Create all the pgm objects in an array called tiles
     for(int i = 0; i < factor_squared; ++i)
@@ -142,7 +138,7 @@ void writeTile(PgmImage source, const char *origin_file_name, const char *target
 
 
 	 for(int i = 0; i < factor_squared; ++i)
-    {
+    	{
 		pgmWrite(tiles[i].filename, tiles[i], return_value);
 	}
 }

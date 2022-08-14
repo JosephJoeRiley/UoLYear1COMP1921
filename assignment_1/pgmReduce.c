@@ -12,12 +12,11 @@ PgmImage pgmReduce(const char *read_filename, unsigned int factor, int *return_v
 	
 	output.width /= factor;
 	output.height /= factor;
-	
+/*	
 	int ratio_x, ratio_y;
 	
 	ratio_x = ratio_y = 0;
 	
-	//These are here 
 	if(input.width > input.height)
 	{
 		ratio_x  = ceil((double) input.width / input.height);
@@ -26,7 +25,7 @@ PgmImage pgmReduce(const char *read_filename, unsigned int factor, int *return_v
 	{
 		ratio_y = ceil((double) input.height / input.width);
 	}
-
+*/
 	//Return if this malloc fails
 	if(reMallocData(&output) != 0)
 	{

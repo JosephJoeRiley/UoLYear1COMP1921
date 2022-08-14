@@ -46,7 +46,7 @@ int comparePgms(const char *aDir, const char* bDir, int *errorReturn)
 	//the dimensions are the same so we're definitly
 	//involving all of image b in the comparison
 	if(a.width == b.width && a.height == b.height && 
-	memcmp(a.imageData, b.imageData, sizeof(a.imageData)))
+	memcmp(a.imageData, b.imageData, a.width * a.height))
 		return IDENTICAL;
 	//If image b does not have the same size, 
 	//naturally the two images differ

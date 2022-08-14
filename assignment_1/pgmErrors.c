@@ -22,7 +22,7 @@ const char *filename, const char *miscMessage)
 		case -1:
 		if(!strcmp(callerID, "Comp"))
 			printf("DIFFERENT");
-			errorCode = 0;
+		errorCode = 0;
 		break;
 		case 0:	
 			//if(!strcmp(callerID, "Read"))
