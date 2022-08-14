@@ -123,7 +123,6 @@ void getASCIIContents(int *err_val, PgmImage *target, FILE *input)
 			int scanCount = pgmScanWrapper(fscanf(input, " %u",
                                                   (unsigned int *) &target->imageData[pixel_row][pixel_col]),
                                            input, target, err_val);
-            printf("Scan results: %d, %d\n", target->imageData[pixel_row][pixel_col], *err_val);
 			//First check if our data is valid and we've managed to scan exactly one integer in
 			if(scanCount < 0)
 			{
