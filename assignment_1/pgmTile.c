@@ -2,25 +2,26 @@
 
 //Returns a variable char array that is the argument
 //input (an integer) written in human-readable ASCII
-char *int_to_char(unsigned int input)
+const char *int_to_char(unsigned int input)
 {
-    //Order is set to the max power of ten that
-    //width or height could possibly divide into
-    //i.e, it's to count how many digits we have
+   	 //Order is set to the max power of ten that
+   	 //width or height could possibly divide into
+   	 //i.e, it's to count how many digits we have
 	unsigned int order = 10000;
-    //The variable that stores how long the character
-    //array will be
-    unsigned int char_array_len;
+   	 //The variable that stores how long the character
+   	 //array will be
+   	 unsigned int char_array_len;
 	//Check how long our number will be
-    //As long as our input doesn't go into input,
-    //our order has too many digits
-    char_array_len = 1;
-    while(input % order != input)
+   	 //As long as our input doesn't go into input,
+    	//our order has too many digits
+   	 char_array_len = 1;
+    	while(input % order != input)
 	{
 		order /= 10;
 		++char_array_len;
 	}
 	char char_array[char_array_len];
+	char* return_string = char_array;
 	//i: the index of the character array
 	//
 	//j: the reference to the inputted integer 
@@ -35,22 +36,23 @@ char *int_to_char(unsigned int input)
 	{
 		char_array[i] = (char) (j / k) + '0';		
 	}
-	return char_array;	
+	return (const char *) return_string;	
 }
 
 //Returns a string where the words 'row' and 'column' between angle brackets '<>'
 //are replaced with the numbers x and y respectively
 const char *createFileName(const char *spec, unsigned int x, unsigned int y)
 {
-	//Since spec is already a const char, we know its size is a 
-	//valid size for this character array so this malloc will never fail
-	char *title = (char *) malloc(strlen(spec) * sizeof(char));
+	//Since spec is already a const char, we know its size 
+	char title[strlen(spec)];  
+	
+	char *title_ptr = title;
+	
 	//Create a for loop with two variables:
 	//index is not the index of title but the index of spec
-
-    //Digit index doesn't increment except/until we reach
-    //an angle bracket at which point, it increments as many
-    //as the amount of digits in either x or y
+   	//Digit index doesn't increment until we reach
+    	//an angle bracket at which point, it increments as many
+   	//as the amount of digits in either x or y
 	for(int index = 0, digit_index = 0; index < strlen(spec); index++)
 	{
 		char c = spec[index];
@@ -59,7 +61,7 @@ const char *createFileName(const char *spec, unsigned int x, unsigned int y)
 			//Set a char array which contains either x or y,
 			//depending if the char that succeeds '<' is a 
 			//'r' for 'row' or a 'c' for 'column'
-			char *number_string;
+			const char *number_string;
             //r for 'row'
 			if((c = spec[++index]) == 'r' || c == 'R')
 				number_string = int_to_char(x);
@@ -76,7 +78,7 @@ const char *createFileName(const char *spec, unsigned int x, unsigned int y)
 		else
 			title[index + digit_index] = c;	
 	}
-    return title;
+    return title_ptr;
 } 
 
 //Writes the pgm_image object source into factor * factor amount of smaller images

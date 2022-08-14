@@ -6,7 +6,7 @@
 #include "pgmErrors.h"
 #include "pgmRead.h"
 #include "pgmWrite.h"
-char *int_to_char(unsigned int input);
+const char *int_to_char(unsigned int input);
 const char *createFileName(const char *spec, unsigned int x, unsigned int y);
 void writeTile(PgmImage source, const char *origin_file_name, 
 const char *target_file_name, unsigned int factor, int *return_value);
